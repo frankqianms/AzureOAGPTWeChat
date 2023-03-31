@@ -5,7 +5,6 @@ import openai
 from wxauto import *
 import time
 import threading
-import schedule
 
 
 openai.api_key = "bc57b5ecaf124dbea5f66cbb883e112a"
@@ -19,7 +18,10 @@ bot_wechat_id = 'AimeeG'
 all_session_last_message = {}
 all_session_prompt_history = {}
 bypass_session_list = ['文件传输助手','腾讯新闻','订阅号','微信团队']
-chat_hint = "堃仔"
+bot_name = "堃仔"
+# bot_name_in_reply = '[堃仔]'
+bot_name_in_reply = ''
+chat_hint = ["堃仔", "[AI]"]
 
 # 每个会话一个单独请求队列，先问先答，直到没有消息
 session_request_queue = {}
@@ -33,7 +35,7 @@ class GPTRequestThread(threading.Thread):
 
     def send_request_to_gpt(prompt, prompt_history):
         # Send a completion call to generate an answer
-        system_prompt = '你是一个世界上最强大的人工智能，你可以帮助任何人找到需要的任何信息，你的名字是' + chat_hint
+        system_prompt = '你是一个世界上最强大的人工智能，你可以帮助任何人找到需要的任何信息，你的名字是' + bot_name
         message_to_send = [{"role": "system",
                             "content": system_prompt}] + prompt_history
         message_to_send.append(prompt)
@@ -61,38 +63,42 @@ class GPTRequestThread(threading.Thread):
         cur_reply = ''
         msg_content = msg[1]
 
-        if msg_content.startswith(chat_hint):
+        if msg_content.startswith(tuple(chat_hint)):
             if '重置' in msg_content:
                 if session in all_session_prompt_history.keys():
                     all_session_prompt_history[session].clear()
-                cur_reply = '[' + chat_hint + '] ' + ' 重置对话'
+                cur_reply = bot_name + ' 重置对话'
             else:
-                msg_to_gpt = msg_content.replace(chat_hint, '').strip()
+                msg_to_gpt = msg_content.replace(bot_name, '').strip()
                 user_input_prompt = {"role": "user", "content": msg_to_gpt}
                 # 添加对话到聊天历史，只添加user的问题
-                all_session_prompt_history[session].append(user_input_prompt)
                 ai_reply = send_request_to_gpt(user_input_prompt, all_session_prompt_history[session])
-                cur_reply = '[' + chat_hint + '] ' + ai_reply.replace('[' + chat_hint + ']', '')
+                if ai_reply != "":
+                    all_session_prompt_history[session].append(user_input_prompt)
+                    cur_reply = bot_name_in_reply + ' ' + ai_reply.replace(bot_name, '')
 
         return cur_reply
 
 
 def send_request_to_gpt(prompt, prompt_history):
     # Send a completion call to generate an answer
-    system_prompt = '你是一个世界上最强大的人工智能，你可以帮助任何人找到需要的任何信息，你的名字是' + chat_hint
+    system_prompt = '你是一个世界上最强大的人工智能，你可以帮助任何人找到需要的任何信息，你的名字是' + bot_name
     message_to_send = [{"role": "system", "content": system_prompt}] + prompt_history
     message_to_send.append(prompt)
     response = openai.ChatCompletion.create(
         engine="GPT35",
         messages=message_to_send,
         temperature=0.8,
-        max_tokens=800,
+        max_tokens=1600,
         frequency_penalty=0,
         presence_penalty=0,
         stop=None)
 
     # return response['choices'][0]['message']['content'].replace('\\n', '').replace(' .', '.').strip()
-    return response['choices'][0]['message']['content'].strip()
+    if 'choices' in response.keys() and 'message' in response['choices'][0].keys() and 'content' in response['choices'][0]['message'].keys():
+        return response['choices'][0]['message']['content'].strip()
+    else:
+        return ""
 
 
 def handle_msg(msg, session):
@@ -107,20 +113,21 @@ def handle_msg(msg, session):
     cur_reply = ''
     msg_content = msg[1]
 
-    if msg_content.startswith(chat_hint):
+    if msg_content.startswith(tuple(chat_hint)):
+        if session not in all_session_prompt_history.keys():
+            all_session_prompt_history[session] = []
         if '重置' in msg_content:
-            if session in all_session_prompt_history.keys():
-                all_session_prompt_history[session].clear()
-            else:
-                all_session_prompt_history[session] = []
-            cur_reply = '[' + chat_hint + ']' + ' 重置对话'
+            all_session_prompt_history[session].clear()
+            cur_reply = bot_name_in_reply + ' 重置对话'
         else:
-            msg_to_gpt = msg_content.replace(chat_hint, '').strip()
+            msg_to_gpt = msg_content.replace(bot_name, '').strip()
             user_input_prompt = {"role": "user", "content": msg_to_gpt}
             # 添加对话到聊天历史，只添加user的问题
-            process_prompt_history(session, user_input_prompt)
+
             ai_reply = send_request_to_gpt(user_input_prompt, all_session_prompt_history[session])
-            cur_reply = '[' + chat_hint + '] ' + ai_reply.replace('[' + chat_hint + ']', '')
+            if ai_reply != "":
+                process_prompt_history(session, user_input_prompt)
+                cur_reply = bot_name_in_reply + ' ' + ai_reply.replace(bot_name_in_reply, '')
 
     return cur_reply
 
@@ -160,9 +167,9 @@ def process_gpt_reply(bot, session, last_message):
                 bot.SendClipboard()
 
         # kun_zai_bot.SendMsg(gpt_reply)
-        if len(all_session_prompt_history[each_session]) == 20:
+        if len(all_session_prompt_history[each_session]) == 10:
             all_session_prompt_history[each_session].clear()
-            reset_reply = '[' + chat_hint + '] ' + '对话已达到10句，重置对话'
+            reset_reply = bot_name_in_reply + ' 对话已达到10句，重置对话'
             kun_zai_bot.SendMsg(reset_reply)
     return gpt_reply
 
