@@ -37,11 +37,11 @@ session_request_queue = {}
 thread_list = {}
 
 # 日志文件
-filename = datetime.now().strftime("%d-%m-%Y %H-%M-%S") #Setting the filename from current date and time
+filename = "C:\\Users\\kufang\\PycharmProjects\\gpt3.5\\" + datetime.now().strftime("%d-%m-%Y %H-%M-%S") + ".txt" #Setting the filename from current date and time
 logging.basicConfig(filename=filename, filemode='a',
                     format="%(asctime)s, %(msecs)d %(name)s %(levelname)s [ %(filename)s-%(module)s-%(lineno)d ]  : %(message)s",
                     datefmt="%H:%M:%S",
-                    level=logging.DEBUG)
+                    level=logging.INFO)
 
 
 class GPTRequestThread(threading.Thread):
@@ -75,7 +75,7 @@ class GPTRequestThread(threading.Thread):
         return response['choices'][0]['message']['content'].strip()
 
     def my_worker(self):
-        logging.info("Thread started.")
+        logging.info(self.name + ": Thread started.")
         while True:
             # 删掉所有已发送的消息
             session_request_queue[self.session][:] = [x for x in session_request_queue[self.session] if not x[2]]
@@ -110,7 +110,7 @@ class GPTRequestThread(threading.Thread):
             if self.idle_time >= 1800:
                 break
         thread_list.pop(self.session)
-        logging.info("Thread released due to idle for 3 minutes.")
+        logging.info(self.name + "Thread released due to idle for 3 minutes.")
 
     def run(self):
         self.my_worker()
@@ -163,12 +163,12 @@ def process_last_message(last_session, last_message):
         # 已经存在的窗口，如果这条消息不存在历史里，加进去
         history_message_match_list = [x for x in all_session_last_message[last_session] if last_message[0] == x[0] and last_message[1] == x[1]]
         if len(history_message_match_list) == 0:
-            logging.info("Last message list before update: " + all_session_last_message[last_session])
+            logging.info("Last message list before update: " + str(all_session_last_message[last_session]))
             all_session_last_message[last_session].append(last_message)
             while len(all_session_last_message[last_session]) > 10:
                 all_session_last_message[last_session].pop(0)
             logging.info("Session: " + last_session + " last message updated.")
-            logging.info("Last message list after update: " + all_session_last_message[last_session])
+            logging.info("Last message list after update: " + str(all_session_last_message[last_session]))
             return True
         # 如果存在了说明已经处理过了，不用处理
     return False
@@ -234,9 +234,9 @@ if __name__ == "__main__":
                             new_thread.start()
                         # 添加新消息到处理队列末尾
                         logging.info("Session: " + each_session + " Adding new question to queue")
-                        logging.info("Request queue before adding: " + session_request_queue[each_session])
+                        logging.info("Request queue before adding: " + str(session_request_queue[each_session]))
                         session_request_queue[each_session].append([each_last_message[1], None, False])
-                        logging.info("Request queue after adding: " + session_request_queue[each_session])
+                        logging.info("Request queue after adding: " + str(session_request_queue[each_session]))
                     else:
                         if '重置' in each_last_message[1]:
                             if each_session not in all_session_prompt_history.keys():
@@ -262,18 +262,18 @@ if __name__ == "__main__":
                             process_prompt_history(each_session, cur_prompt)
 
                             logging.info("Sending reply to session: " + each_session + ": " + reply)
-                            logging.info("Request queue before sending: " + session_request_queue[each_session])
+                            logging.info("Request queue before sending: " + str(session_request_queue[each_session]))
 
                             # 回复gpt答复到当前会话
                             kun_zai_bot.ChatWith(each_session)
-                            time.sleep(0.1)
+                            # time.sleep(0.1)
                             send_msg_to_wechat_using_clipboard(kun_zai_bot, reply)
 
                             logging.info("Reply sent to session: " + each_session + ": " + reply)
                             # print("\n回复给 " + each_session + "\n问题：" + each_query_in_session[0] + "\n回答：" + each_query_in_session[1])
                             # 回复完后标记这个请求为已发送
                             each_query_in_session[2] = True
-                            logging.info("Request queue after sending: " + session_request_queue[each_session])
+                            logging.info("Request queue after sending: " + str(session_request_queue[each_session]))
                             # 如果prompt history超过 条，清空history，重置
                             if len(all_session_prompt_history[each_session]) >= max_token_per_session:
                                 all_session_prompt_history[each_session].clear()
@@ -283,6 +283,6 @@ if __name__ == "__main__":
                             # 回复消息无效，标记这个请求为已发送
                             each_query_in_session[2] = True
                             logging.info("Invalid reply not sent to session: " + each_session + ": " + reply)
-                            logging.info("Request queue after not sending: " + session_request_queue[each_session])
+                            logging.info("Request queue after not sending: " + str(session_request_queue[each_session]))
 
         # time.sleep(0.1)
