@@ -20,7 +20,7 @@ wechat_one_msg_upper_limit = 600
 num_message_history_to_check = 5
 
 
-bypass_session_list = ['文件传输助手','腾讯新闻','订阅号','微信团队']
+bypass_session_list = ['文件传输助手','腾讯新闻','订阅号','微信团队','微信支付']
 bot_name = "堃仔"
 bot_name_in_reply = '' #'[AI]'
 # bot_name_in_reply = ''
