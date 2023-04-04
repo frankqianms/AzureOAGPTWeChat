@@ -16,13 +16,13 @@ bot_wechat_id = '堃仔'
 gpt_temperature = 0.8
 gpt_max_token = 1500
 max_token_per_session = 20
-wechat_one_msg_upper_limit = 1500
+wechat_one_msg_upper_limit = 600
 num_message_history_to_check = 5
 
 
 bypass_session_list = ['文件传输助手','腾讯新闻','订阅号','微信团队']
 bot_name = "堃仔"
-bot_name_in_reply = '[AI]'
+bot_name_in_reply = '' #'[AI]'
 # bot_name_in_reply = ''
 chat_hint = ["堃仔"]  #, "[AI]"]
 
