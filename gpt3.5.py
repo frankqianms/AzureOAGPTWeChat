@@ -153,6 +153,9 @@ def process_last_message(last_session, last_message):
     # 如果消息是自己发的，跳过
     if last_message[0] == bot_wechat_id:
         return False
+    # 忽略系统消息
+    if last_message[0] == "SYS":
+        return False
     # 如果聊天窗口是新冒出来的，添加到dict
     if last_session not in all_session_last_message.keys():
         # 添加此聊天最后一条消息到列表
@@ -238,14 +241,17 @@ if __name__ == "__main__":
                         session_request_queue[each_session].append([each_last_message[1], None, False])
                         logging.info("Session: " + each_session + ", Request queue after adding: " + str(session_request_queue[each_session]))
                     else:
-                        if '重置' in each_last_message[1]:
-                            if each_session not in all_session_prompt_history.keys():
-                                # 聊天历史初始化为空列表
-                                all_session_prompt_history[each_session] = []
-                            else:
-                                # 重置列表
-                                all_session_prompt_history[each_session].clear()
-                                logging.info("Session: " + each_session + ", session prompt history cleared")
+                        if each_last_message[1].startswith(tuple(chat_hint)):
+                            if '重置' in each_last_message[1]:
+                                if each_session not in all_session_prompt_history.keys():
+                                    # 聊天历史初始化为空列表
+                                    all_session_prompt_history[each_session] = []
+                                else:
+                                    # 重置列表
+                                    all_session_prompt_history[each_session].clear()
+                                    logging.info("Session: " + each_session + ", session prompt history cleared")
+                                reset_reply = bot_name_in_reply + ' 重置对话'
+                                kun_zai_bot.SendMsg(reset_reply)
 
             if each_session in session_request_queue.keys() and len(session_request_queue[each_session]) != 0:
                 for each_query_in_session in [x for x in session_request_queue[each_session] if not x[2]]:
