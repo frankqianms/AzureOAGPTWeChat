@@ -44,7 +44,7 @@ thread_list = {}
 folder_path = "logs"
 if not os.path.exists(folder_path):
     os.makedirs(folder_path)
-    
+
 filename = "logs\\" + datetime.now().strftime(
     "%d-%m-%Y %H-%M-%S") + ".txt"  # Setting the filename from current date and time
 logging.basicConfig(filename=filename, filemode='a',
@@ -375,7 +375,8 @@ if __name__ == "__main__":
     while True:
         if state_machine == 0:
             if counter == 0:
-                print("当前状态：working, 处理消息队列中")
+                pending_gpt_sessions = [es for es in session_request_queue.keys()]
+                print("当前状态：working, 处理消息队列中，当前等待消息的聊天有：" + str(pending_gpt_sessions))
             elif counter >= 1:
                 print("当前状态：working, " + str(counter) + "/" + str(rounds_of_chats_to_check) + " 个循环内无新消息")
                 logging.info("当前状态：working, " + str(counter) + "/" + str(rounds_of_chats_to_check) + " 个循环内无新消息")
