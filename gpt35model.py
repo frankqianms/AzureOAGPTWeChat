@@ -369,8 +369,9 @@ if __name__ == "__main__":
     # 停不下来
     while True:
         if state_machine == 0:
-            print("当前状态：working, 处理消息队列中")
-            if counter >= 1:
+            if counter == 0:
+                print("当前状态：working, 处理消息队列中")
+            elif counter >= 1:
                 print("当前状态：working, " + str(counter) + "/" + str(rounds_of_chats_to_check) + " 个循环内无新消息")
                 logging.info("当前状态：working, " + str(counter) + "/" + str(rounds_of_chats_to_check) + " 个循环内无新消息")
             # 计数器到达N时，进入闲置期
@@ -379,6 +380,7 @@ if __name__ == "__main__":
                 logging.info("当前进入状态：idle")
                 print("当前进入状态：idle")
                 state_machine = 1
+                
             counter = counter + 1
         elif state_machine == 1:
             pass
