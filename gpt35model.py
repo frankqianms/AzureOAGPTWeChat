@@ -37,7 +37,7 @@ session_request_queue = {}
 thread_list = {}
 
 # 日志文件
-filename = "C:\\Users\\kufang\\PycharmProjects\\gpt3.5\\logs\\" + datetime.now().strftime("%d-%m-%Y %H-%M-%S") + ".txt" #Setting the filename from current date and time
+filename = "logs\\" + datetime.now().strftime("%d-%m-%Y %H-%M-%S") + ".txt" #Setting the filename from current date and time
 logging.basicConfig(filename=filename, filemode='a',
                     format="%(asctime)s, %(msecs)d %(name)s %(levelname)s [ %(filename)s-%(module)s-%(lineno)d ]  : %(message)s",
                     datefmt="%H:%M:%S",
