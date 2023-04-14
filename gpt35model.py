@@ -347,7 +347,7 @@ if __name__ == "__main__":
     top_session = locate_top_valid_session(kun_zai_bot)
 
     session_num_to_check = 6
-    rounds_of_chats_to_check = 5
+    rounds_of_chats_to_check = 2
     # 设置计数器，到达N次循环后从工作期进入闲置期
     counter = 0
 
@@ -440,7 +440,10 @@ if __name__ == "__main__":
                 print("当前进入状态：working")
                 state_machine = 0
                 kun_zai_bot.ChatWith(cur_top_session)
-                cur_top_current_last_message = kun_zai_bot.GetLastMessage
+                try:
+                    cur_top_current_last_message = kun_zai_bot.GetLastMessage
+                except Exception as e:
+                    cur_top_current_last_message = ["", "", ""]
                 last_top_session = cur_top_session
                 last_top_session_message = cur_top_current_last_message
                 get_chat_history_in_session_and_process(kun_zai_bot, cur_top_session)
@@ -458,7 +461,10 @@ if __name__ == "__main__":
                     # 顶端窗口未变化
                     if last_top_session == each_session:
                         kun_zai_bot.ChatWith(each_session)
-                        cur_top_current_last_message = kun_zai_bot.GetLastMessage
+                        try:
+                            cur_top_current_last_message = kun_zai_bot.GetLastMessage
+                        except Exception as e:
+                            cur_top_current_last_message = ["", "", ""]
                         if cur_top_current_last_message[0] == last_top_session_message[0] and \
                                 cur_top_current_last_message[1] == last_top_session_message[1]:
                             # 没有新消息，发送旧的处理后的消息
@@ -473,7 +479,11 @@ if __name__ == "__main__":
                         # 更新顶端窗口
                         last_top_session = each_session
                         kun_zai_bot.ChatWith(each_session)
-                        last_top_session_message = kun_zai_bot.GetLastMessage
+
+                        try:
+                            last_top_session_message = kun_zai_bot.GetLastMessage
+                        except Exception as e:
+                            last_top_session_message = ["", "", ""]
                 # 非顶端窗口
                 else:
                     # 处理非顶端窗口新消息
