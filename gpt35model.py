@@ -6,10 +6,12 @@ import logging
 from datetime import datetime
 
 # Constants
-# openai.api_key = "bc57b5ecaf124dbea5f66cbb883e112a"
-openai.api_key = "e0fa531d0d4d4c96a70be8434c5f85b4"
-# openai.api_base = "https://mikaelrealmopenaiuseast.openai.azure.com/"
-openai.api_base = "https://mikaelrealmopenaiussouthcentral.openai.azure.com/"
+key1 = "bc57b5ecaf124dbea5f66cbb883e112a"
+api_base1 = "https://mikaelrealmopenaiuseast.openai.azure.com/"
+openai.api_key = key1
+key2 = "e0fa531d0d4d4c96a70be8434c5f85b4"
+openai.api_base = api_base1
+api_base2 = "https://mikaelrealmopenaiussouthcentral.openai.azure.com/"
 openai.api_type = 'azure'
 # openai.api_version = '2022-12-01'
 openai.api_version = '2023-03-15-preview'
@@ -64,15 +66,33 @@ class GPTRequestThread(threading.Thread):
         message_to_send = [{"role": "system",
                             "content": system_prompt}] + prompt_history
         message_to_send.append(prompt)
-
-        response = openai.ChatCompletion.create(
-            engine="GPT35",
-            messages=message_to_send,
-            temperature=gpt_temperature,
-            max_tokens=gpt_max_token,
-            frequency_penalty=0.2,
-            presence_penalty=0,
-            stop=None)
+        try:
+            response = openai.ChatCompletion.create(
+                engine="GPT35",
+                messages=message_to_send,
+                temperature=gpt_temperature,
+                max_tokens=gpt_max_token,
+                frequency_penalty=0.2,
+                presence_penalty=0,
+                stop=None)
+        except Exception as e:
+            print("Thread: " + self.session + " has error with Azure OpenAI API call: " + e)
+            logging.error(e)
+            if openai.api_key == key1:
+                openai.api_key = key2
+                openai.api_base = api_base2
+            else:
+                openai.api_key = key1
+                openai.api_base = api_base2
+            logging.info("Thread: " + self.session + " Switching to backup key success")
+            response = openai.ChatCompletion.create(
+                engine="GPT35",
+                messages=message_to_send,
+                temperature=gpt_temperature,
+                max_tokens=gpt_max_token,
+                frequency_penalty=0.2,
+                presence_penalty=0,
+                stop=None)
 
         # return response['choices'][0]['message']['content'].replace('\\n', '').replace(' .', '.').strip()
         return response['choices'][0]['message']['content'].strip()
@@ -341,7 +361,10 @@ if __name__ == "__main__":
         # 上一个最上面的窗口
         last_top_session = top_session
         # 上一个最上面的窗口的最后消息
-        last_top_session_message = kun_zai_bot.GetLastMessage
+        try:
+            last_top_session_message = kun_zai_bot.GetLastMessage
+        except Exception as e:
+            last_top_session_message = ["", "", ""]
 
     # 停不下来
     while True:
@@ -389,7 +412,10 @@ if __name__ == "__main__":
             cur_top_session = session_list[0]
             # 第一个窗口没有变化
             if cur_top_session == last_top_session:
-                cur_top_current_last_message = kun_zai_bot.GetLastMessage
+                try:
+                    cur_top_current_last_message = kun_zai_bot.GetLastMessage
+                except Exception as e:
+                    cur_top_current_last_message = ["", "", ""]
                 if cur_top_current_last_message[0] == last_top_session_message[0] and last_top_session_message[1] == \
                         cur_top_current_last_message[1]:
                     # 消息没有变化，继续循环

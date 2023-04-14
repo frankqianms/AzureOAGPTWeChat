@@ -1,0 +1,2 @@
+20:52:09, 900 root INFO [ gpt35model.py-gpt35model-99 ]  : ·½ˆÒ: Thread started.
+20:52:09, 900 root INFO [ gpt35model.py-gpt35model-99 ]  : ·½ˆÒ¡¢Aimee: Thread started.

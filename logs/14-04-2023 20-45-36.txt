@@ -1,0 +1,87 @@
+20:45:37, 260 root INFO [ gpt35model.py-gpt35model-81 ]  : 方堃、Aimee: Thread started.
+20:45:37, 260 root INFO [ gpt35model.py-gpt35model-81 ]  : 方堃: Thread started.
+20:46:24, 776 root INFO [ gpt35model.py-gpt35model-413 ]  : 当前进入状态：working
+20:46:25, 606 root INFO [ gpt35model.py-gpt35model-175 ]  : Session: 方堃, Updating last message
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-176 ]  : Session: 方堃, Last message list before update: [('AimeeG', '我爱你在西班牙语中是“Te quiero”或者“Te amo”。', '429896816419070')]
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-181 ]  : Session: 方堃 last message updated.
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-182 ]  : Session: 方堃, Last message list after update: [('AimeeG', '我爱你在西班牙语中是“Te quiero”或者“Te amo”。', '429896816419070'), ('AimeeG', '一般而言，不粘锅并不会对人体造成危害。不粘锅采用特殊的涂层技术，使其表面光滑、易于清洁，食材不易粘在锅底，从而减少了使用油脂的量，有利于健康饮食。但是如果使用不当或者购买劣质产品，不粘锅也可能会对健康造成影响。建议购买品牌信誉好、证书齐全的正规产品，并按照使用说明正确使用和保养不粘锅。', '429896816419067')]
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-175 ]  : Session: 方堃, Updating last message
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-176 ]  : Session: 方堃, Last message list before update: [('AimeeG', '我爱你在西班牙语中是“Te quiero”或者“Te amo”。', '429896816419070'), ('AimeeG', '一般而言，不粘锅并不会对人体造成危害。不粘锅采用特殊的涂层技术，使其表面光滑、易于清洁，食材不易粘在锅底，从而减少了使用油脂的量，有利于健康饮食。但是如果使用不当或者购买劣质产品，不粘锅也可能会对健康造成影响。建议购买品牌信誉好、证书齐全的正规产品，并按照使用说明正确使用和保养不粘锅。', '429896816419067')]
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-181 ]  : Session: 方堃 last message updated.
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-182 ]  : Session: 方堃, Last message list after update: [('AimeeG', '我爱你在西班牙语中是“Te quiero”或者“Te amo”。', '429896816419070'), ('AimeeG', '一般而言，不粘锅并不会对人体造成危害。不粘锅采用特殊的涂层技术，使其表面光滑、易于清洁，食材不易粘在锅底，从而减少了使用油脂的量，有利于健康饮食。但是如果使用不当或者购买劣质产品，不粘锅也可能会对健康造成影响。建议购买品牌信誉好、证书齐全的正规产品，并按照使用说明正确使用和保养不粘锅。', '429896816419067'), ('AimeeG', '今天是2021年4月14日，周五。没有特别的全国性或国际性的节日或纪念日。', '429896816419064')]
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-175 ]  : Session: 方堃, Updating last message
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-176 ]  : Session: 方堃, Last message list before update: [('AimeeG', '我爱你在西班牙语中是“Te quiero”或者“Te amo”。', '429896816419070'), ('AimeeG', '一般而言，不粘锅并不会对人体造成危害。不粘锅采用特殊的涂层技术，使其表面光滑、易于清洁，食材不易粘在锅底，从而减少了使用油脂的量，有利于健康饮食。但是如果使用不当或者购买劣质产品，不粘锅也可能会对健康造成影响。建议购买品牌信誉好、证书齐全的正规产品，并按照使用说明正确使用和保养不粘锅。', '429896816419067'), ('AimeeG', '今天是2021年4月14日，周五。没有特别的全国性或国际性的节日或纪念日。', '429896816419064')]
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-181 ]  : Session: 方堃 last message updated.
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-182 ]  : Session: 方堃, Last message list after update: [('AimeeG', '我爱你在西班牙语中是“Te quiero”或者“Te amo”。', '429896816419070'), ('AimeeG', '一般而言，不粘锅并不会对人体造成危害。不粘锅采用特殊的涂层技术，使其表面光滑、易于清洁，食材不易粘在锅底，从而减少了使用油脂的量，有利于健康饮食。但是如果使用不当或者购买劣质产品，不粘锅也可能会对健康造成影响。建议购买品牌信誉好、证书齐全的正规产品，并按照使用说明正确使用和保养不粘锅。', '429896816419067'), ('AimeeG', '今天是2021年4月14日，周五。没有特别的全国性或国际性的节日或纪念日。', '429896816419064'), ('方堃', '堃仔，复活节是几号', '429896816419061')]
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-242 ]  : Session: 方堃, Adding new question to queue
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-243 ]  : Session: 方堃, Request queue before adding: []
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-246 ]  : Session: 方堃, Request queue after adding: [['堃仔，复活节是几号', None, False]]
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-175 ]  : Session: 方堃, Updating last message
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-176 ]  : Session: 方堃, Last message list before update: [('AimeeG', '我爱你在西班牙语中是“Te quiero”或者“Te amo”。', '429896816419070'), ('AimeeG', '一般而言，不粘锅并不会对人体造成危害。不粘锅采用特殊的涂层技术，使其表面光滑、易于清洁，食材不易粘在锅底，从而减少了使用油脂的量，有利于健康饮食。但是如果使用不当或者购买劣质产品，不粘锅也可能会对健康造成影响。建议购买品牌信誉好、证书齐全的正规产品，并按照使用说明正确使用和保养不粘锅。', '429896816419067'), ('AimeeG', '今天是2021年4月14日，周五。没有特别的全国性或国际性的节日或纪念日。', '429896816419064'), ('方堃', '堃仔，复活节是几号', '429896816419061')]
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-181 ]  : Session: 方堃 last message updated.
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-182 ]  : Session: 方堃, Last message list after update: [('AimeeG', '我爱你在西班牙语中是“Te quiero”或者“Te amo”。', '429896816419070'), ('AimeeG', '一般而言，不粘锅并不会对人体造成危害。不粘锅采用特殊的涂层技术，使其表面光滑、易于清洁，食材不易粘在锅底，从而减少了使用油脂的量，有利于健康饮食。但是如果使用不当或者购买劣质产品，不粘锅也可能会对健康造成影响。建议购买品牌信誉好、证书齐全的正规产品，并按照使用说明正确使用和保养不粘锅。', '429896816419067'), ('AimeeG', '今天是2021年4月14日，周五。没有特别的全国性或国际性的节日或纪念日。', '429896816419064'), ('方堃', '堃仔，复活节是几号', '429896816419061'), ('AimeeG', '2021年的复活节是4月4日。复活节是一个移动节日，每年的日期不同，通常在公历3月22日至4月25日之间的第一个星期日庆祝。', '429896816419058')]
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-175 ]  : Session: 方堃, Updating last message
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-176 ]  : Session: 方堃, Last message list before update: [('AimeeG', '我爱你在西班牙语中是“Te quiero”或者“Te amo”。', '429896816419070'), ('AimeeG', '一般而言，不粘锅并不会对人体造成危害。不粘锅采用特殊的涂层技术，使其表面光滑、易于清洁，食材不易粘在锅底，从而减少了使用油脂的量，有利于健康饮食。但是如果使用不当或者购买劣质产品，不粘锅也可能会对健康造成影响。建议购买品牌信誉好、证书齐全的正规产品，并按照使用说明正确使用和保养不粘锅。', '429896816419067'), ('AimeeG', '今天是2021年4月14日，周五。没有特别的全国性或国际性的节日或纪念日。', '429896816419064'), ('方堃', '堃仔，复活节是几号', '429896816419061'), ('AimeeG', '2021年的复活节是4月4日。复活节是一个移动节日，每年的日期不同，通常在公历3月22日至4月25日之间的第一个星期日庆祝。', '429896816419058')]
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-181 ]  : Session: 方堃 last message updated.
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-182 ]  : Session: 方堃, Last message list after update: [('AimeeG', '我爱你在西班牙语中是“Te quiero”或者“Te amo”。', '429896816419070'), ('AimeeG', '一般而言，不粘锅并不会对人体造成危害。不粘锅采用特殊的涂层技术，使其表面光滑、易于清洁，食材不易粘在锅底，从而减少了使用油脂的量，有利于健康饮食。但是如果使用不当或者购买劣质产品，不粘锅也可能会对健康造成影响。建议购买品牌信誉好、证书齐全的正规产品，并按照使用说明正确使用和保养不粘锅。', '429896816419067'), ('AimeeG', '今天是2021年4月14日，周五。没有特别的全国性或国际性的节日或纪念日。', '429896816419064'), ('方堃', '堃仔，复活节是几号', '429896816419061'), ('AimeeG', '2021年的复活节是4月4日。复活节是一个移动节日，每年的日期不同，通常在公历3月22日至4月25日之间的第一个星期日庆祝。', '429896816419058'), ('方堃', '堃仔，清明节是几号', '429896816419055')]
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-242 ]  : Session: 方堃, Adding new question to queue
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-243 ]  : Session: 方堃, Request queue before adding: [['堃仔，复活节是几号', None, False]]
+20:46:25, 607 root INFO [ gpt35model.py-gpt35model-246 ]  : Session: 方堃, Request queue after adding: [['堃仔，复活节是几号', None, False], ['堃仔，清明节是几号', None, False]]
+20:46:25, 621 root INFO [ gpt35model.py-gpt35model-98 ]  : Thread: 方堃, Query sent to GPT is: ，复活节是几号
+20:46:26, 435 root INFO [ gpt35model.py-gpt35model-175 ]  : Session: 方堃、Aimee, Updating last message
+20:46:26, 435 root INFO [ gpt35model.py-gpt35model-176 ]  : Session: 方堃、Aimee, Last message list before update: [('方堃', '我买了', '429896816419146')]
+20:46:26, 436 root INFO [ gpt35model.py-gpt35model-181 ]  : Session: 方堃、Aimee last message updated.
+20:46:26, 436 root INFO [ gpt35model.py-gpt35model-182 ]  : Session: 方堃、Aimee, Last message list after update: [('方堃', '我买了', '429896816419146'), ('Aimee', '油爆虾', '429896816419140')]
+20:46:26, 436 root INFO [ gpt35model.py-gpt35model-175 ]  : Session: 方堃、Aimee, Updating last message
+20:46:26, 436 root INFO [ gpt35model.py-gpt35model-176 ]  : Session: 方堃、Aimee, Last message list before update: [('方堃', '我买了', '429896816419146'), ('Aimee', '油爆虾', '429896816419140')]
+20:46:26, 436 root INFO [ gpt35model.py-gpt35model-181 ]  : Session: 方堃、Aimee last message updated.
+20:46:26, 436 root INFO [ gpt35model.py-gpt35model-182 ]  : Session: 方堃、Aimee, Last message list after update: [('方堃', '我买了', '429896816419146'), ('Aimee', '油爆虾', '429896816419140'), ('方堃', '炸串', '429896816419134')]
+20:46:26, 436 root INFO [ gpt35model.py-gpt35model-175 ]  : Session: 方堃、Aimee, Updating last message
+20:46:26, 436 root INFO [ gpt35model.py-gpt35model-176 ]  : Session: 方堃、Aimee, Last message list before update: [('方堃', '我买了', '429896816419146'), ('Aimee', '油爆虾', '429896816419140'), ('方堃', '炸串', '429896816419134')]
+20:46:26, 436 root INFO [ gpt35model.py-gpt35model-181 ]  : Session: 方堃、Aimee last message updated.
+20:46:26, 436 root INFO [ gpt35model.py-gpt35model-182 ]  : Session: 方堃、Aimee, Last message list after update: [('方堃', '我买了', '429896816419146'), ('Aimee', '油爆虾', '429896816419140'), ('方堃', '炸串', '429896816419134'), ('方堃', '堃仔，你的生日是几号', '429896816419128')]
+20:46:26, 436 root INFO [ gpt35model.py-gpt35model-242 ]  : Session: 方堃、Aimee, Adding new question to queue
+20:46:26, 436 root INFO [ gpt35model.py-gpt35model-243 ]  : Session: 方堃、Aimee, Request queue before adding: []
+20:46:26, 436 root INFO [ gpt35model.py-gpt35model-246 ]  : Session: 方堃、Aimee, Request queue after adding: [['堃仔，你的生日是几号', None, False]]
+20:46:26, 436 root INFO [ gpt35model.py-gpt35model-175 ]  : Session: 方堃、Aimee, Updating last message
+20:46:26, 436 root INFO [ gpt35model.py-gpt35model-176 ]  : Session: 方堃、Aimee, Last message list before update: [('方堃', '我买了', '429896816419146'), ('Aimee', '油爆虾', '429896816419140'), ('方堃', '炸串', '429896816419134'), ('方堃', '堃仔，你的生日是几号', '429896816419128')]
+20:46:26, 436 root INFO [ gpt35model.py-gpt35model-181 ]  : Session: 方堃、Aimee last message updated.
+20:46:26, 436 root INFO [ gpt35model.py-gpt35model-182 ]  : Session: 方堃、Aimee, Last message list after update: [('方堃', '我买了', '429896816419146'), ('Aimee', '油爆虾', '429896816419140'), ('方堃', '炸串', '429896816419134'), ('方堃', '堃仔，你的生日是几号', '429896816419128'), ('AimeeG', '作为人工智能，我没有生日。我的程序是在不断地更新和优化中，以便更好地为人类服务。', '429896816419125')]
+20:46:26, 436 root INFO [ gpt35model.py-gpt35model-461 ]  : Session: 方堃、Aimee 处于状态: working，等待消息队列处理中
+20:46:26, 523 root INFO [ gpt35model.py-gpt35model-98 ]  : Thread: 方堃、Aimee, Query sent to GPT is: ，你的生日是几号
+20:46:28, 29 root INFO [ gpt35model.py-gpt35model-461 ]  : Session: 方堃、Aimee 处于状态: working，等待消息队列处理中
+20:46:29, 324 root INFO [ gpt35model.py-gpt35model-104 ]  : Thread: 方堃、Aimee, After sending Query, Reply stored is: 作为一个人工智能，我没有生日。我的程序是在开发团队编写代码的过程中逐步完善的。
+20:46:29, 635 root INFO [ gpt35model.py-gpt35model-104 ]  : Thread: 方堃, After sending Query, Reply stored is: 复活节在每年的春季举行，具体日期根据西方基督教的传统计算，通常在公历3月22日至4月25日之间的第一个周日举行。所以具体日期会有所不同，你需要告诉我你想知道哪一年的复活节日期。
+20:46:29, 635 root INFO [ gpt35model.py-gpt35model-98 ]  : Thread: 方堃, Query sent to GPT is: ，清明节是几号
+20:46:29, 639 root INFO [ gpt35model.py-gpt35model-282 ]  : Session: 方堃、Aimee, Sending reply to session: 作为一个人工智能，我没有生日。我的程序是在开发团队编写代码的过程中逐步完善的。
+20:46:29, 639 root INFO [ gpt35model.py-gpt35model-283 ]  : Session: 方堃、Aimee, Request queue before sending: [['堃仔，你的生日是几号', '作为一个人工智能，我没有生日。我的程序是在开发团队编写代码的过程中逐步完善的。', False]]
+20:46:30, 808 root INFO [ gpt35model.py-gpt35model-291 ]  : Session: 方堃、Aimee, Reply sent: 作为一个人工智能，我没有生日。我的程序是在开发团队编写代码的过程中逐步完善的。
+20:46:30, 808 root INFO [ gpt35model.py-gpt35model-295 ]  : Session: 方堃、Aimee, Request queue after sending: [['堃仔，你的生日是几号', '作为一个人工智能，我没有生日。我的程序是在开发团队编写代码的过程中逐步完善的。', True]]
+20:46:30, 808 root INFO [ gpt35model.py-gpt35model-461 ]  : Session: 方堃、Aimee 处于状态: working，等待消息队列处理中
+20:46:31, 283 root INFO [ gpt35model.py-gpt35model-104 ]  : Thread: 方堃, After sending Query, Reply stored is: 清明节是中国传统节日之一，一般在每年的4月4日或5日，是我国传统节气中的二十四节气之一——清明节。
+20:46:31, 585 root INFO [ gpt35model.py-gpt35model-282 ]  : Session: 方堃, Sending reply to session: 复活节在每年的春季举行，具体日期根据西方基督教的传统计算，通常在公历3月22日至4月25日之间的第一个周日举行。所以具体日期会有所不同，你需要告诉我你想知道哪一年的复活节日期。
+20:46:31, 585 root INFO [ gpt35model.py-gpt35model-283 ]  : Session: 方堃, Request queue before sending: [['堃仔，复活节是几号', '复活节在每年的春季举行，具体日期根据西方基督教的传统计算，通常在公历3月22日至4月25日之间的第一个周日举行。所以具体日期会有所不同，你需要告诉我你想知道哪一年的复活节日期。', False], ['堃仔，清明节是几号', '清明节是中国传统节日之一，一般在每年的4月4日或5日，是我国传统节气中的二十四节气之一——清明节。', False]]
+20:46:32, 637 root INFO [ gpt35model.py-gpt35model-291 ]  : Session: 方堃, Reply sent: 复活节在每年的春季举行，具体日期根据西方基督教的传统计算，通常在公历3月22日至4月25日之间的第一个周日举行。所以具体日期会有所不同，你需要告诉我你想知道哪一年的复活节日期。
+20:46:32, 637 root INFO [ gpt35model.py-gpt35model-295 ]  : Session: 方堃, Request queue after sending: [['堃仔，复活节是几号', '复活节在每年的春季举行，具体日期根据西方基督教的传统计算，通常在公历3月22日至4月25日之间的第一个周日举行。所以具体日期会有所不同，你需要告诉我你想知道哪一年的复活节日期。', True], ['堃仔，清明节是几号', '清明节是中国传统节日之一，一般在每年的4月4日或5日，是我国传统节气中的二十四节气之一——清明节。', False]]
+20:46:32, 637 root INFO [ gpt35model.py-gpt35model-282 ]  : Session: 方堃, Sending reply to session: 清明节是中国传统节日之一，一般在每年的4月4日或5日，是我国传统节气中的二十四节气之一——清明节。
+20:46:32, 637 root INFO [ gpt35model.py-gpt35model-283 ]  : Session: 方堃, Request queue before sending: [['堃仔，复活节是几号', '复活节在每年的春季举行，具体日期根据西方基督教的传统计算，通常在公历3月22日至4月25日之间的第一个周日举行。所以具体日期会有所不同，你需要告诉我你想知道哪一年的复活节日期。', True], ['堃仔，清明节是几号', '清明节是中国传统节日之一，一般在每年的4月4日或5日，是我国传统节气中的二十四节气之一——清明节。', False]]
+20:46:33, 680 root INFO [ gpt35model.py-gpt35model-291 ]  : Session: 方堃, Reply sent: 清明节是中国传统节日之一，一般在每年的4月4日或5日，是我国传统节气中的二十四节气之一——清明节。
+20:46:33, 680 root INFO [ gpt35model.py-gpt35model-295 ]  : Session: 方堃, Request queue after sending: [['堃仔，清明节是几号', '清明节是中国传统节日之一，一般在每年的4月4日或5日，是我国传统节气中的二十四节气之一——清明节。', True]]
+20:46:34, 516 root INFO [ gpt35model.py-gpt35model-175 ]  : Session: 方堃、Aimee, Updating last message
+20:46:34, 517 root INFO [ gpt35model.py-gpt35model-176 ]  : Session: 方堃、Aimee, Last message list before update: [('方堃', '我买了', '429896816419146'), ('Aimee', '油爆虾', '429896816419140'), ('方堃', '炸串', '429896816419134'), ('方堃', '堃仔，你的生日是几号', '429896816419128'), ('AimeeG', '作为人工智能，我没有生日。我的程序是在不断地更新和优化中，以便更好地为人类服务。', '429896816419125')]
+20:46:34, 517 root INFO [ gpt35model.py-gpt35model-181 ]  : Session: 方堃、Aimee last message updated.
+20:46:34, 517 root INFO [ gpt35model.py-gpt35model-182 ]  : Session: 方堃、Aimee, Last message list after update: [('方堃', '我买了', '429896816419146'), ('Aimee', '油爆虾', '429896816419140'), ('方堃', '炸串', '429896816419134'), ('方堃', '堃仔，你的生日是几号', '429896816419128'), ('AimeeG', '作为人工智能，我没有生日。我的程序是在不断地更新和优化中，以便更好地为人类服务。', '429896816419125'), ('AimeeG', '作为一个人工智能，我没有生日。我的程序是在开发团队编写代码的过程中逐步完善的。', '429896816419527')]
+20:46:35, 334 root INFO [ gpt35model.py-gpt35model-175 ]  : Session: 方堃, Updating last message
+20:46:35, 334 root INFO [ gpt35model.py-gpt35model-176 ]  : Session: 方堃, Last message list before update: [('AimeeG', '我爱你在西班牙语中是“Te quiero”或者“Te amo”。', '429896816419070'), ('AimeeG', '一般而言，不粘锅并不会对人体造成危害。不粘锅采用特殊的涂层技术，使其表面光滑、易于清洁，食材不易粘在锅底，从而减少了使用油脂的量，有利于健康饮食。但是如果使用不当或者购买劣质产品，不粘锅也可能会对健康造成影响。建议购买品牌信誉好、证书齐全的正规产品，并按照使用说明正确使用和保养不粘锅。', '429896816419067'), ('AimeeG', '今天是2021年4月14日，周五。没有特别的全国性或国际性的节日或纪念日。', '429896816419064'), ('方堃', '堃仔，复活节是几号', '429896816419061'), ('AimeeG', '2021年的复活节是4月4日。复活节是一个移动节日，每年的日期不同，通常在公历3月22日至4月25日之间的第一个星期日庆祝。', '429896816419058'), ('方堃', '堃仔，清明节是几号', '429896816419055')]
+20:46:35, 334 root INFO [ gpt35model.py-gpt35model-181 ]  : Session: 方堃 last message updated.
+20:46:35, 334 root INFO [ gpt35model.py-gpt35model-182 ]  : Session: 方堃, Last message list after update: [('AimeeG', '我爱你在西班牙语中是“Te quiero”或者“Te amo”。', '429896816419070'), ('AimeeG', '一般而言，不粘锅并不会对人体造成危害。不粘锅采用特殊的涂层技术，使其表面光滑、易于清洁，食材不易粘在锅底，从而减少了使用油脂的量，有利于健康饮食。但是如果使用不当或者购买劣质产品，不粘锅也可能会对健康造成影响。建议购买品牌信誉好、证书齐全的正规产品，并按照使用说明正确使用和保养不粘锅。', '429896816419067'), ('AimeeG', '今天是2021年4月14日，周五。没有特别的全国性或国际性的节日或纪念日。', '429896816419064'), ('方堃', '堃仔，复活节是几号', '429896816419061'), ('AimeeG', '2021年的复活节是4月4日。复活节是一个移动节日，每年的日期不同，通常在公历3月22日至4月25日之间的第一个星期日庆祝。', '429896816419058'), ('方堃', '堃仔，清明节是几号', '429896816419055'), ('AimeeG', '复活节在每年的春季举行，具体日期根据西方基督教的传统计算，通常在公历3月22日至4月25日之间的第一个周日举行。所以具体日期会有所不同，你需要告诉我你想知道哪一年的复活节日期。', '429896816419610')]
+20:46:35, 334 root INFO [ gpt35model.py-gpt35model-175 ]  : Session: 方堃, Updating last message
+20:46:35, 334 root INFO [ gpt35model.py-gpt35model-176 ]  : Session: 方堃, Last message list before update: [('AimeeG', '我爱你在西班牙语中是“Te quiero”或者“Te amo”。', '429896816419070'), ('AimeeG', '一般而言，不粘锅并不会对人体造成危害。不粘锅采用特殊的涂层技术，使其表面光滑、易于清洁，食材不易粘在锅底，从而减少了使用油脂的量，有利于健康饮食。但是如果使用不当或者购买劣质产品，不粘锅也可能会对健康造成影响。建议购买品牌信誉好、证书齐全的正规产品，并按照使用说明正确使用和保养不粘锅。', '429896816419067'), ('AimeeG', '今天是2021年4月14日，周五。没有特别的全国性或国际性的节日或纪念日。', '429896816419064'), ('方堃', '堃仔，复活节是几号', '429896816419061'), ('AimeeG', '2021年的复活节是4月4日。复活节是一个移动节日，每年的日期不同，通常在公历3月22日至4月25日之间的第一个星期日庆祝。', '429896816419058'), ('方堃', '堃仔，清明节是几号', '429896816419055'), ('AimeeG', '复活节在每年的春季举行，具体日期根据西方基督教的传统计算，通常在公历3月22日至4月25日之间的第一个周日举行。所以具体日期会有所不同，你需要告诉我你想知道哪一年的复活节日期。', '429896816419610')]
+20:46:35, 334 root INFO [ gpt35model.py-gpt35model-181 ]  : Session: 方堃 last message updated.
+20:46:35, 334 root INFO [ gpt35model.py-gpt35model-182 ]  : Session: 方堃, Last message list after update: [('AimeeG', '我爱你在西班牙语中是“Te quiero”或者“Te amo”。', '429896816419070'), ('AimeeG', '一般而言，不粘锅并不会对人体造成危害。不粘锅采用特殊的涂层技术，使其表面光滑、易于清洁，食材不易粘在锅底，从而减少了使用油脂的量，有利于健康饮食。但是如果使用不当或者购买劣质产品，不粘锅也可能会对健康造成影响。建议购买品牌信誉好、证书齐全的正规产品，并按照使用说明正确使用和保养不粘锅。', '429896816419067'), ('AimeeG', '今天是2021年4月14日，周五。没有特别的全国性或国际性的节日或纪念日。', '429896816419064'), ('方堃', '堃仔，复活节是几号', '429896816419061'), ('AimeeG', '2021年的复活节是4月4日。复活节是一个移动节日，每年的日期不同，通常在公历3月22日至4月25日之间的第一个星期日庆祝。', '429896816419058'), ('方堃', '堃仔，清明节是几号', '429896816419055'), ('AimeeG', '复活节在每年的春季举行，具体日期根据西方基督教的传统计算，通常在公历3月22日至4月25日之间的第一个周日举行。所以具体日期会有所不同，你需要告诉我你想知道哪一年的复活节日期。', '429896816419610'), ('AimeeG', '清明节是中国传统节日之一，一般在每年的4月4日或5日，是我国传统节气中的二十四节气之一——清明节。', '429896816419607')]
+20:46:36, 927 root INFO [ gpt35model.py-gpt35model-351 ]  : 当前状态：working, 1/5 个循环内无新消息
+20:46:38, 521 root INFO [ gpt35model.py-gpt35model-351 ]  : 当前状态：working, 2/5 个循环内无新消息
+20:46:40, 108 root INFO [ gpt35model.py-gpt35model-351 ]  : 当前状态：working, 3/5 个循环内无新消息
+20:46:41, 698 root INFO [ gpt35model.py-gpt35model-351 ]  : 当前状态：working, 4/5 个循环内无新消息
+20:46:43, 296 root INFO [ gpt35model.py-gpt35model-351 ]  : 当前状态：working, 5/5 个循环内无新消息
+20:46:43, 296 root INFO [ gpt35model.py-gpt35model-355 ]  : 当前进入状态：idle
