@@ -369,6 +369,7 @@ if __name__ == "__main__":
     # 停不下来
     while True:
         if state_machine == 0:
+            print("当前状态：working, 处理消息队列中")
             if counter >= 1:
                 print("当前状态：working, " + str(counter) + "/" + str(rounds_of_chats_to_check) + " 个循环内无新消息")
                 logging.info("当前状态：working, " + str(counter) + "/" + str(rounds_of_chats_to_check) + " 个循环内无新消息")
