@@ -6,12 +6,14 @@ import logging
 from datetime import datetime
 
 # Constants
-openai.api_key = "bc57b5ecaf124dbea5f66cbb883e112a"
-openai.api_base = "https://mikaelrealmopenaiuseast.openai.azure.com/"
+# openai.api_key = "bc57b5ecaf124dbea5f66cbb883e112a"
+openai.api_key = "e0fa531d0d4d4c96a70be8434c5f85b4"
+# openai.api_base = "https://mikaelrealmopenaiuseast.openai.azure.com/"
+openai.api_base = "https://mikaelrealmopenaiussouthcentral.openai.azure.com/"
 openai.api_type = 'azure'
 # openai.api_version = '2022-12-01'
 openai.api_version = '2023-03-15-preview'
-deployment_id ='GPT35'
+deployment_id = 'GPT35'
 bot_wechat_id = '堃仔'
 gpt_temperature = 0.8
 gpt_max_token = 1500
@@ -19,12 +21,11 @@ max_token_per_session = 20
 wechat_one_msg_upper_limit = 600
 num_message_history_to_check = 5
 
-
-bypass_session_list = ['文件传输助手','腾讯新闻','订阅号','微信团队','微信支付']
+bypass_session_list = ['文件传输助手', '腾讯新闻', '订阅号', '微信团队', '微信支付']
 bot_name = "堃仔"
-bot_name_in_reply = '' #'[AI]'
+bot_name_in_reply = ''  # '[AI]'
 # bot_name_in_reply = ''
-chat_hint = ["堃仔"]  #, "[AI]"]
+chat_hint = ["堃仔"]  # , "[AI]"]
 
 # 所有会话的最后num_message_history_to_check条消息
 all_session_last_message = {}
@@ -37,7 +38,8 @@ session_request_queue = {}
 thread_list = {}
 
 # 日志文件
-filename = "logs\\" + datetime.now().strftime("%d-%m-%Y %H-%M-%S") + ".txt" #Setting the filename from current date and time
+filename = "logs\\" + datetime.now().strftime(
+    "%d-%m-%Y %H-%M-%S") + ".txt"  # Setting the filename from current date and time
 logging.basicConfig(filename=filename, filemode='a',
                     format="%(asctime)s, %(msecs)d %(name)s %(levelname)s [ %(filename)s-%(module)s-%(lineno)d ]  : %(message)s",
                     datefmt="%H:%M:%S",
@@ -88,17 +90,19 @@ class GPTRequestThread(threading.Thread):
                         # 构造发送给gpt的prompt
                         # 去掉 bot_name开头
                         msg_to_gpt = each_query[0][len(bot_name):].strip()
+                        # print(msg_to_gpt)
                         user_prompt = {"role": "user", "content": msg_to_gpt}
                         # 发送给gpt，得到答复
                         try:
                             # logging.info("Before sending Query")
-                            logging.info("Thread: " + self.name + ", Query sent to GPT is: " + each_query[0])
+                            logging.info("Thread: " + self.name + ", Query sent to GPT is: " + msg_to_gpt)
                             ai_reply = self.send_request_to_gpt(user_prompt, all_session_prompt_history[self.session])
 
-                        # 将回复填入队列中第一个消息的回复里
+                            # 将回复填入队列中第一个消息的回复里
                             each_query[1] = ai_reply
                             # print("\n会话 " + self.session + " ，问题 " + each_query[0] + " 获取gpt回答成功\n")
-                            logging.info("Thread: " + self.name + ", After sending Query, Reply stored is: " + each_query[1])
+                            logging.info(
+                                "Thread: " + self.name + ", After sending Query, Reply stored is: " + each_query[1])
                         except Exception as e:
                             print(e)
                             logging.info("Thread: " + self.name + ", Exception in sending query to gpt.")
@@ -107,8 +111,8 @@ class GPTRequestThread(threading.Thread):
             else:
                 self.idle_time = self.idle_time + 1
             time.sleep(0.1)
-            # 如果3分钟左右没有新消息，释放线程
-            if self.idle_time >= 1800:
+            # 如果1分钟左右没有新消息，释放线程
+            if self.idle_time >= 600:
                 break
         thread_list.pop(self.session)
         logging.info(self.name + ", Thread released due to idle for 3 minutes.")
@@ -165,15 +169,18 @@ def process_last_message(last_session, last_message):
         return True
     else:
         # 已经存在的窗口，如果这条消息不存在历史里，加进去
-        history_message_match_list = [x for x in all_session_last_message[last_session] if (last_message[0] == x[0] and last_message[1] == x[1])]
+        history_message_match_list = [x for x in all_session_last_message[last_session] if
+                                      (last_message[0] == x[0] and last_message[1] == x[1])]
         if len(history_message_match_list) == 0:
             logging.info("Session: " + last_session + ", Updating last message")
-            logging.info("Session: " + last_session + ", Last message list before update: " + str(all_session_last_message[last_session]))
+            logging.info("Session: " + last_session + ", Last message list before update: " + str(
+                all_session_last_message[last_session]))
             all_session_last_message[last_session].append(last_message)
             while len(all_session_last_message[last_session]) > 10:
                 all_session_last_message[last_session].pop(0)
             logging.info("Session: " + last_session + " last message updated.")
-            logging.info("Session: " + last_session + ", Last message list after update: " + str(all_session_last_message[last_session]))
+            logging.info("Session: " + last_session + ", Last message list after update: " + str(
+                all_session_last_message[last_session]))
             return True
         # 如果存在了说明已经处理过了，不用处理
     return False
@@ -212,94 +219,246 @@ def process_prompt_history(prompt_session, prompt):
         all_session_prompt_history[prompt_session].append(prompt)
 
 
+def get_chat_history_in_session_and_process(kun_zai_bot, each_session):
+
+    # 获取最后X条消息
+    all_messages = kun_zai_bot.GetAllMessage
+    if len(all_messages) <= num_message_history_to_check:
+        cur_session_x_last_message = all_messages
+    else:
+        cur_session_x_last_message = kun_zai_bot.GetAllMessage[-num_message_history_to_check - 1:]
+    for each_last_message in cur_session_x_last_message:
+        # logging.info("last message: " + str(each_last_message) + ", 3")
+        if process_last_message(each_session, each_last_message):
+            # 消息有变化时，检查是否满足发送给gpt的条件。
+            if handle_msg(each_last_message):
+                # 如果满足，检查线程是否已经释放，如果释放，初始化
+                if each_session not in thread_list.keys():
+                    new_thread = GPTRequestThread(each_session)
+                    thread_list[each_session] = new_thread
+                    new_thread.start()
+                    # time.sleep(0.1)
+                # 添加新消息到处理队列末尾
+                logging.info("Session: " + each_session + ", Adding new question to queue")
+                logging.info("Session: " + each_session + ", Request queue before adding: " + str(
+                    session_request_queue[each_session]))
+                session_request_queue[each_session].append([each_last_message[1], None, False])
+                logging.info("Session: " + each_session + ", Request queue after adding: " + str(
+                    session_request_queue[each_session]))
+            else:
+                if each_last_message[1].startswith(tuple(chat_hint)):
+                    if '重置' in each_last_message[1]:
+                        if each_session not in all_session_prompt_history.keys():
+                            # 聊天历史初始化为空列表
+                            all_session_prompt_history[each_session] = []
+                        else:
+                            # 重置列表
+                            all_session_prompt_history[each_session].clear()
+                            logging.info("Session: " + each_session + ", session prompt history cleared")
+                        reset_reply = bot_name_in_reply + ' 对话已重置'
+                        kun_zai_bot.SendMsg(reset_reply)
+
+
+def send_processed_message_from_gpt_to_wechat(kun_zai_bot, each_session):
+    # 选定当前聊天窗口
+    if each_session not in session_request_queue.keys() or len(session_request_queue[each_session]) == 0:
+        # 没有消息任务
+        return False
+    if each_session in session_request_queue.keys() and len(session_request_queue[each_session]) != 0:
+        for each_query_in_session in [x for x in session_request_queue[each_session] if not x[2]]:
+            # gpt处理过且尚未发送
+            if each_query_in_session[1] is not None:
+                # 遍历这个会话队列所有的gpt消息，如果已经获取到了，检查是否已经发送过给会话，确认是否需要回复给这个聊天窗口
+                reply = each_query_in_session[1]
+                if reply != "":
+                    cur_prompt = {"role": "assistant", "content": reply}
+                    # 将用户问题添加到prompt history
+                    user_input = each_query_in_session[0][len(bot_name):].strip()
+                    user_input_prompt = {"role": "user", "content": user_input}
+                    process_prompt_history(each_session, user_input_prompt)
+                    # 添加gpt回复添加到prompt history
+                    process_prompt_history(each_session, cur_prompt)
+
+                    logging.info("Session: " + each_session + ", Sending reply to session: " + reply)
+                    logging.info("Session: " + each_session + ", Request queue before sending: " + str(
+                        session_request_queue[each_session]))
+
+                    # 回复gpt答复到当前会话
+                    kun_zai_bot.ChatWith(each_session)
+                    # time.sleep(0.1)
+                    send_msg_to_wechat_using_clipboard(kun_zai_bot, reply)
+
+                    logging.info("Session: " + each_session + ", Reply sent: " + reply)
+                    # print("\n回复给 " + each_session + "\n问题：" + each_query_in_session[0] + "\n回答：" + each_query_in_session[1])
+                    # 回复完后标记这个请求为已发送
+                    each_query_in_session[2] = True
+                    logging.info("Session: " + each_session + ", Request queue after sending: " + str(
+                        session_request_queue[each_session]))
+                    # 如果prompt history超过 条，清空history，重置
+                    if len(all_session_prompt_history[each_session]) >= max_token_per_session:
+                        all_session_prompt_history[each_session].clear()
+                        reset_reply = bot_name_in_reply + ' 对话已达到' + str(max_token_per_session) + '句，重置对话'
+                        kun_zai_bot.SendMsg(reset_reply)
+                else:
+                    # 回复消息无效，标记这个请求为已发送
+                    each_query_in_session[2] = True
+                    logging.info("Session: " + each_session + ", Invalid reply not sent to session: " + reply)
+                    logging.info("Session: " + each_session + "Request queue after not sending: " + str(
+                        session_request_queue[each_session]))
+    return True
+
+
+def locate_top_valid_session(kun_zai_bot):
+    session_list = kun_zai_bot.GetSessionList()
+    filtered_session_list = [ss for ss in session_list if ss not in bypass_session_list]
+    if len(filtered_session_list) > 0:
+        return filtered_session_list[0]
+    else:
+        return -1
+
+
 if __name__ == "__main__":
     kun_zai_bot = WeChat()
     # 初始化所有聊天窗口的线程
     init_all_session_threads(kun_zai_bot.GetSessionList())
+    # 0: working, 1: idle , 2: idle and no valid chat.
+    state_machine = 1
+    # 初始化，待机状态，选中第一个非忽略聊天窗口
+    top_session = locate_top_valid_session(kun_zai_bot)
+
+    session_num_to_check = 6
+    rounds_of_chats_to_check = 5
+    # 设置计数器，到达N次循环后从工作期进入闲置期
+    counter = 0
+
+    # 一个真正的聊天窗口都没有
+    if top_session == -1:
+        state_machine = 2
+        last_top_session = ""
+        last_top_session_message = ["", "", ""]
+    else:
+        kun_zai_bot.ChatWith(top_session)
+        # 上一个最上面的窗口
+        last_top_session = top_session
+        # 上一个最上面的窗口的最后消息
+        last_top_session_message = kun_zai_bot.GetLastMessage
 
     # 停不下来
     while True:
+        if state_machine == 0:
+            if counter >= 1:
+                print("当前状态：working, " + str(counter) + "/" + str(rounds_of_chats_to_check) + " 个循环内无新消息")
+                logging.info("当前状态：working, " + str(counter) + "/" + str(rounds_of_chats_to_check) + " 个循环内无新消息")
+            # 计数器到达N时，进入闲置期
+            if counter >= rounds_of_chats_to_check:
+                counter = 0
+                logging.info("当前进入状态：idle")
+                print("当前进入状态：idle")
+                state_machine = 1
+            counter = counter + 1
+        elif state_machine == 1:
+            pass
+            # print("当前状态：idle")
+        elif state_machine == 2:
+            pass
+            # print("当前状态：idle no valid session")
+
         # 每次
         # 遍历所有聊天窗口
         session_list = kun_zai_bot.GetSessionList()
-        for each_session in session_list[:8]:
-            if each_session in bypass_session_list:
-                continue
-            # 选定当前聊天窗口
-            #logging.info("Session: " + each_session + ", 1")
-            kun_zai_bot.ChatWith(each_session)
-            # time.sleep(0.2)
-            #logging.info("Session: " + each_session + ", 2")
-            # 获取最后X条消息
-            cur_session_X_last_message = kun_zai_bot.GetAllMessage[-num_message_history_to_check-1:]
-            for each_last_message in cur_session_X_last_message:
-                #logging.info("last message: " + str(each_last_message) + ", 3")
-                if process_last_message(each_session, each_last_message):
-                    # 消息有变化时，检查是否满足发送给gpt的条件。
-                    if handle_msg(each_last_message):
-                        # 如果满足，检查线程是否已经释放，如果释放，初始化
-                        if each_session not in thread_list.keys():
-                            new_thread = GPTRequestThread(each_session)
-                            thread_list[each_session] = new_thread
-                            new_thread.start()
-                        # 添加新消息到处理队列末尾
-                        logging.info("Session: " + each_session + ", Adding new question to queue")
-                        logging.info("Session: " + each_session + ", Request queue before adding: " + str(session_request_queue[each_session]))
-                        session_request_queue[each_session].append([each_last_message[1], None, False])
-                        logging.info("Session: " + each_session + ", Request queue after adding: " + str(session_request_queue[each_session]))
-                    else:
-                        if each_last_message[1].startswith(tuple(chat_hint)):
-                            if '重置' in each_last_message[1]:
-                                if each_session not in all_session_prompt_history.keys():
-                                    # 聊天历史初始化为空列表
-                                    all_session_prompt_history[each_session] = []
-                                else:
-                                    # 重置列表
-                                    all_session_prompt_history[each_session].clear()
-                                    logging.info("Session: " + each_session + ", session prompt history cleared")
-                                reset_reply = bot_name_in_reply + ' 重置对话'
-                                kun_zai_bot.SendMsg(reset_reply)
+        # 去掉无效聊天
+        session_list = [ss for ss in session_list if ss not in bypass_session_list]
 
-            #logging.info("Session: " + each_session + ", 4")
-            if each_session in session_request_queue.keys() and len(session_request_queue[each_session]) != 0:
-                for each_query_in_session in [x for x in session_request_queue[each_session] if not x[2]]:
-                    # gpt处理过且尚未发送
-                    if each_query_in_session[1] is not None:
-                        # 遍历这个会话队列所有的gpt消息，如果已经获取到了，检查是否已经发送过给会话，确认是否需要回复给这个聊天窗口
-                        reply = each_query_in_session[1]
-                        if reply != "":
-                            cur_prompt = {"role": "assistant", "content": reply}
-                            # 将用户问题添加到prompt history
-                            user_input = each_query_in_session[0].replace(bot_name, '').strip()
-                            user_input_prompt = {"role": "user", "content": user_input}
-                            process_prompt_history(each_session, user_input_prompt)
-                            # 添加gpt回复添加到prompt history
-                            process_prompt_history(each_session, cur_prompt)
+        if len(session_list) == 0:
+            # 0个有效聊天，等5秒刷新
+            logging.info("当前进入状态：idle no valid session")
+            print("当前进入状态：idle no valid session")
+            state_machine = 2
+            time.sleep(1)
+            continue
+        else:
+            # 从0到1，说明进入工作期
+            if state_machine == 2:
+                logging.info("当前进入状态：working")
+                print("当前进入状态：working")
+                state_machine = 0
 
-                            logging.info("Session: " + each_session + ", Sending reply to session: " + reply)
-                            logging.info("Session: " + each_session + ", Request queue before sending: " + str(session_request_queue[each_session]))
-
-                            # 回复gpt答复到当前会话
-                            kun_zai_bot.ChatWith(each_session)
-                            # time.sleep(0.1)
-                            send_msg_to_wechat_using_clipboard(kun_zai_bot, reply)
-
-                            logging.info("Session: " + each_session + ", Reply sent: " + reply)
-                            # print("\n回复给 " + each_session + "\n问题：" + each_query_in_session[0] + "\n回答：" + each_query_in_session[1])
-                            # 回复完后标记这个请求为已发送
-                            each_query_in_session[2] = True
-                            logging.info("Session: " + each_session + ", Request queue after sending: " + str(session_request_queue[each_session]))
-                            # 如果prompt history超过 条，清空history，重置
-                            if len(all_session_prompt_history[each_session]) >= max_token_per_session:
-                                all_session_prompt_history[each_session].clear()
-                                reset_reply = bot_name_in_reply + ' 对话已达到' + str(max_token_per_session) + '句，重置对话'
-                                kun_zai_bot.SendMsg(reset_reply)
+        # 闲置期，只检查第一个窗口
+        if state_machine == 1:
+            # 当前最上面的窗口
+            cur_top_session = session_list[0]
+            # 第一个窗口没有变化
+            if cur_top_session == last_top_session:
+                cur_top_current_last_message = kun_zai_bot.GetLastMessage
+                if cur_top_current_last_message[0] == last_top_session_message[0] and last_top_session_message[1] == \
+                        cur_top_current_last_message[1]:
+                    # 消息没有变化，继续循环
+                    time.sleep(1)
+                    if send_processed_message_from_gpt_to_wechat(kun_zai_bot, cur_top_session):
+                        counter = 0
+                    continue
+                else:
+                    # 窗口没变化，消息有变化，处理新消息
+                    logging.info("当前进入状态：working")
+                    print("当前进入状态：working")
+                    state_machine = 0
+                    kun_zai_bot.ChatWith(cur_top_session)
+                    last_top_session_message = cur_top_current_last_message
+                    get_chat_history_in_session_and_process(kun_zai_bot, cur_top_session)
+                    # 计数器清零重置
+                    counter = 0
+            # 第一个窗口变化
+            else:
+                # 处理新消息
+                logging.info("当前进入状态：working")
+                print("当前进入状态：working")
+                state_machine = 0
+                kun_zai_bot.ChatWith(cur_top_session)
+                cur_top_current_last_message = kun_zai_bot.GetLastMessage
+                last_top_session = cur_top_session
+                last_top_session_message = cur_top_current_last_message
+                get_chat_history_in_session_and_process(kun_zai_bot, cur_top_session)
+                # 计数器清零重置
+                counter = 0
+            if send_processed_message_from_gpt_to_wechat(kun_zai_bot, cur_top_session):
+                counter = 0
+        elif state_machine == 0:
+            for session_index in range(min(len(session_list), session_num_to_check + 1) - 1, -1, -1):
+                each_session = session_list[session_index]
+                # 工作期流程
+                # 反向遍历
+                # 顶端窗口
+                if each_session == session_list[0]:
+                    # 顶端窗口未变化
+                    if last_top_session == each_session:
+                        kun_zai_bot.ChatWith(each_session)
+                        cur_top_current_last_message = kun_zai_bot.GetLastMessage
+                        if cur_top_current_last_message[0] == last_top_session_message[0] and \
+                                cur_top_current_last_message[1] == last_top_session_message[1]:
+                            # 没有新消息，发送旧的处理后的消息
+                            if send_processed_message_from_gpt_to_wechat(kun_zai_bot, each_session):
+                                counter = 0
+                            continue
                         else:
-                            # 回复消息无效，标记这个请求为已发送
-                            each_query_in_session[2] = True
-                            logging.info("Session: " + each_session + ", Invalid reply not sent to session: " + reply)
-                            logging.info("Session: " + each_session + "Request queue after not sending: " + str(session_request_queue[each_session]))
+                            last_top_session_message = cur_top_current_last_message
+                            # 计数器清零重置
+                            counter = 0
+                    else:
+                        # 更新顶端窗口
+                        last_top_session = each_session
+                        kun_zai_bot.ChatWith(each_session)
+                        last_top_session_message = kun_zai_bot.GetLastMessage
+                # 非顶端窗口
+                else:
+                    # 处理非顶端窗口新消息
+                    kun_zai_bot.ChatWith(each_session)
 
-            #logging.info("Session: " + each_session + ", 5")
+                get_chat_history_in_session_and_process(kun_zai_bot, each_session)
+                # 处理发送当前会话GPT回答过，仍未发送的消息
+                if send_processed_message_from_gpt_to_wechat(kun_zai_bot, each_session):
+                    # 还有未处理或者未发送的消息时，计数器清零
+                    counter = 0
+                    logging.info("Session: " + each_session + " 处于状态: working，等待消息队列处理中")
+                    print("Session: " + each_session + " 处于状态: working，等待消息队列处理中")
 
         # time.sleep(0.1)
