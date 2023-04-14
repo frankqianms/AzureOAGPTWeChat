@@ -5,6 +5,7 @@ import threading
 import logging
 from datetime import datetime
 import os
+import keyboard
 
 # Constants
 key1 = "bc57b5ecaf124dbea5f66cbb883e112a"
@@ -430,6 +431,7 @@ if __name__ == "__main__":
                         cur_top_current_last_message[1]:
                     # 消息没有变化，继续循环
                     time.sleep(1)
+                    keyboard.press_and_release('alt + ctrl')
                     if send_processed_message_from_gpt_to_wechat(kun_zai_bot, cur_top_session):
                         counter = 0
                     continue
