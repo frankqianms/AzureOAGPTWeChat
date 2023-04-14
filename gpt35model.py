@@ -37,7 +37,7 @@ session_request_queue = {}
 thread_list = {}
 
 # 日志文件
-filename = "C:\\Users\\kufang\\PycharmProjects\\gpt3.5\\" + datetime.now().strftime("%d-%m-%Y %H-%M-%S") + ".txt" #Setting the filename from current date and time
+filename = "C:\\Users\\kufang\\PycharmProjects\\gpt3.5\\logs\\" + datetime.now().strftime("%d-%m-%Y %H-%M-%S") + ".txt" #Setting the filename from current date and time
 logging.basicConfig(filename=filename, filemode='a',
                     format="%(asctime)s, %(msecs)d %(name)s %(levelname)s [ %(filename)s-%(module)s-%(lineno)d ]  : %(message)s",
                     datefmt="%H:%M:%S",
@@ -62,6 +62,7 @@ class GPTRequestThread(threading.Thread):
         message_to_send = [{"role": "system",
                             "content": system_prompt}] + prompt_history
         message_to_send.append(prompt)
+
         response = openai.ChatCompletion.create(
             engine="GPT35",
             messages=message_to_send,
@@ -85,7 +86,8 @@ class GPTRequestThread(threading.Thread):
                     # 队列中每个用户消息尚未得到gpt回复时
                     if each_query[1] is None:
                         # 构造发送给gpt的prompt
-                        msg_to_gpt = each_query[0].strip()
+                        # 去掉 bot_name开头
+                        msg_to_gpt = each_query[0][len(bot_name):].strip()
                         user_prompt = {"role": "user", "content": msg_to_gpt}
                         # 发送给gpt，得到答复
                         try:
@@ -100,7 +102,7 @@ class GPTRequestThread(threading.Thread):
                         except Exception as e:
                             print(e)
                             logging.info("Thread: " + self.name + ", Exception in sending query to gpt.")
-                            logging.info("Thread: " + self.name + ", Exception is: " + e)
+                            logging.info("Thread: " + self.name + ", Exception is: " + str(e))
                     self.idle_time = 0
             else:
                 self.idle_time = self.idle_time + 1
@@ -163,7 +165,7 @@ def process_last_message(last_session, last_message):
         return True
     else:
         # 已经存在的窗口，如果这条消息不存在历史里，加进去
-        history_message_match_list = [x for x in all_session_last_message[last_session] if last_message[0] == x[0] and last_message[1] == x[1]]
+        history_message_match_list = [x for x in all_session_last_message[last_session] if (last_message[0] == x[0] and last_message[1] == x[1])]
         if len(history_message_match_list) == 0:
             logging.info("Session: " + last_session + ", Updating last message")
             logging.info("Session: " + last_session + ", Last message list before update: " + str(all_session_last_message[last_session]))
@@ -177,8 +179,8 @@ def process_last_message(last_session, last_message):
     return False
 
 
-def init_all_session_threads(session_list):
-    for init_each_session in session_list:
+def init_all_session_threads(session_lists):
+    for init_each_session in session_lists:
         if init_each_session in bypass_session_list:
             continue
         each_thread = GPTRequestThread(init_each_session)
@@ -219,14 +221,19 @@ if __name__ == "__main__":
     while True:
         # 每次
         # 遍历所有聊天窗口
-        for each_session in kun_zai_bot.GetSessionList():
+        session_list = kun_zai_bot.GetSessionList()
+        for each_session in session_list[:8]:
             if each_session in bypass_session_list:
                 continue
             # 选定当前聊天窗口
+            #logging.info("Session: " + each_session + ", 1")
             kun_zai_bot.ChatWith(each_session)
+            # time.sleep(0.2)
+            #logging.info("Session: " + each_session + ", 2")
             # 获取最后X条消息
             cur_session_X_last_message = kun_zai_bot.GetAllMessage[-num_message_history_to_check-1:]
             for each_last_message in cur_session_X_last_message:
+                #logging.info("last message: " + str(each_last_message) + ", 3")
                 if process_last_message(each_session, each_last_message):
                     # 消息有变化时，检查是否满足发送给gpt的条件。
                     if handle_msg(each_last_message):
@@ -253,6 +260,7 @@ if __name__ == "__main__":
                                 reset_reply = bot_name_in_reply + ' 重置对话'
                                 kun_zai_bot.SendMsg(reset_reply)
 
+            #logging.info("Session: " + each_session + ", 4")
             if each_session in session_request_queue.keys() and len(session_request_queue[each_session]) != 0:
                 for each_query_in_session in [x for x in session_request_queue[each_session] if not x[2]]:
                     # gpt处理过且尚未发送
@@ -291,5 +299,7 @@ if __name__ == "__main__":
                             each_query_in_session[2] = True
                             logging.info("Session: " + each_session + ", Invalid reply not sent to session: " + reply)
                             logging.info("Session: " + each_session + "Request queue after not sending: " + str(session_request_queue[each_session]))
+
+            #logging.info("Session: " + each_session + ", 5")
 
         # time.sleep(0.1)
