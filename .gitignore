@@ -1,3 +1,4 @@
 
 @AutomationLog.txt
 logs/*
+.idea/*
