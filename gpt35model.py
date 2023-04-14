@@ -376,6 +376,7 @@ if __name__ == "__main__":
         if state_machine == 0:
             if counter == 0:
                 pending_gpt_sessions = [es for es in session_request_queue.keys()]
+                pending_gpt_sessions = [es for es in pending_gpt_sessions if session_request_queue[es] != []]
                 print("当前状态：working, 处理消息队列中，当前等待消息的聊天有：" + str(pending_gpt_sessions))
             elif counter >= 1:
                 print("当前状态：working, " + str(counter) + "/" + str(rounds_of_chats_to_check) + " 个循环内无新消息")
