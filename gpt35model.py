@@ -4,6 +4,7 @@ import time
 import threading
 import logging
 from datetime import datetime
+import os
 
 # Constants
 key1 = "bc57b5ecaf124dbea5f66cbb883e112a"
@@ -40,6 +41,10 @@ session_request_queue = {}
 thread_list = {}
 
 # 日志文件
+folder_path = "logs"
+if not os.path.exists(folder_path):
+    os.makedirs(folder_path)
+    
 filename = "logs\\" + datetime.now().strftime(
     "%d-%m-%Y %H-%M-%S") + ".txt"  # Setting the filename from current date and time
 logging.basicConfig(filename=filename, filemode='a',
