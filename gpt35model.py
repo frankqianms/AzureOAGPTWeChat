@@ -51,7 +51,8 @@ if not os.path.exists(folder_path):
 filename = "logs\\" + datetime.now().strftime(
     "%d-%m-%Y") + ".txt"  # Setting the filename from current date and time
 logging.basicConfig(filename=filename, filemode='a',
-                    format="%(asctime)s, %(msecs)d %(name)s %(levelname)s [ %(filename)s-%(module)s-%(lineno)d ]  : %(message)s",
+                    format="%(asctime)s, %(msecs)d %(name)s %(levelname)s "
+                           "[ %(filename)s-%(module)s-%(lineno)d ]  : %(message)s",
                     datefmt="%H:%M:%S",
                     level=logging.INFO)
 
@@ -83,9 +84,10 @@ class GPTRequestThread(threading.Thread):
                 frequency_penalty=0.2,
                 presence_penalty=0,
                 stop=None)
-        except Exception as e:
-            print(str(datetime.now())[:-4] + "Thread: " + self.session + " has error with Azure OpenAI API call: " + e)
-            logging.error(e)
+        except Exception as ex:
+            print(str(datetime.now())[:-4] + "Thread: " + self.session +
+                  " has error with Azure OpenAI API call: " + str(ex))
+            logging.error(ex)
             if openai.api_key == key1:
                 openai.api_key = key2
                 openai.api_base = api_base2
@@ -128,13 +130,14 @@ class GPTRequestThread(threading.Thread):
 
                             # 将回复填入队列中第一个消息的回复里
                             each_query[1] = ai_reply
-                            # print(str(datetime.now())[:-4] + "\n会话 " + self.session + " ，问题 " + each_query[0] + " 获取gpt回答成功\n")
+                            # print(str(datetime.now())[:-4] + "\n会话 " + self.session + " ，问题 " +
+                            # each_query[0] + " 获取gpt回答成功\n")
                             logging.info(
                                 "Thread: " + self.name + ", After sending Query, Reply stored is: " + each_query[1])
-                        except Exception as e:
-                            print(str(datetime.now())[:-4] + e)
+                        except Exception as ex:
+                            print(str(datetime.now())[:-4] + str(ex))
                             logging.info("Thread: " + self.name + ", Exception in sending query to gpt.")
-                            logging.info("Thread: " + self.name + ", Exception is: " + str(e))
+                            logging.info("Thread: " + self.name + ", Exception is: " + str(ex))
                     self.idle_time = 0
             else:
                 self.idle_time = self.idle_time + 1
@@ -180,7 +183,7 @@ def process_last_message(last_session, last_message):
 
     :param last_session:
     :param last_message:
-    :return: True if has new message
+    :return: True if session has new message
     """
     if last_message is None:
         return False
@@ -261,9 +264,10 @@ def detect_and_process_last_message_in_top_has_changed(wechat_bot,
     cur_top_session_name = locate_top_valid_session(wechat_bot)
     if cur_top_session_name == -1:
         return False, False, "", ["", "", ""]
+    # noinspection PyBroadException
     try:
         cur_top_current_last_message_content = wechat_bot.GetLastMessage
-    except Exception as e:
+    except Exception:
         cur_top_current_last_message_content = ["", "", ""]
     if last_top_session_name == cur_top_session_name:
         if cur_top_current_last_message_content[0] == last_top_session_last_message_content[0] \
@@ -360,7 +364,8 @@ def send_processed_message_from_gpt_to_wechat(we_chat_bot, each_ses):
                     send_msg_to_wechat_using_clipboard(we_chat_bot, reply)
 
                     logging.info("Session: " + each_ses + ", Reply sent: " + reply)
-                    # print(str(datetime.now())[:-4] + "\n回复给 " + each_ses + "\n问题：" + each_query_in_session[0] + "\n回答：" + each_query_in_session[1])
+                    # print(str(datetime.now())[:-4] + "\n回复给 " + each_ses + "\n问题：" +
+                    # each_query_in_session[0] + "\n回答：" + each_query_in_session[1])
                     # 回复完后标记这个请求为已发送
                     each_query_in_session[2] = True
                     logging.info("Session: " + each_ses + ", Request queue after sending: " + str(
@@ -410,7 +415,7 @@ if __name__ == "__main__":
         # 上一个最上面的窗口的最后消息
         try:
             last_top_session_message = kun_zai_bot.GetLastMessage
-        except Exception as e:
+        except Exception:
             last_top_session_message = ["", "", ""]
 
     # 停不下来
