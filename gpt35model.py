@@ -7,4 +7,3 @@ from envconfig import *
 
 if __name__ == "__main__":
     start_gpt_bot_using_we_chat_frontend()
-
