@@ -255,7 +255,10 @@ def detect_and_process_last_message_in_top_has_changed(wechat_bot,
         else:
             # 如果手动点了一个非顶端窗口，这里可以强行点回去顶端窗口修复bug
             wechat_bot.ChatWith(cur_top_session_name)
-            cur_top_current_last_message_content = wechat_bot.GetLastMessage
+            try:
+                cur_top_current_last_message_content = wechat_bot.GetLastMessage
+            except Exception:
+                cur_top_current_last_message_content = ["", "", ""]
             if cur_top_current_last_message_content[0] == last_top_session_last_message_content[0] \
                     and cur_top_current_last_message_content[1] == last_top_session_last_message_content[1]:
                 return False, False, last_top_session_name, last_top_session_last_message_content
