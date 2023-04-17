@@ -517,7 +517,5 @@ if __name__ == "__main__":
                         print(str(datetime.now())[:-4] + "当前进入状态：working")
                 else:
                     time.sleep(0.5)
-                    # 继续idle状态
-                    continue
 
         loop_iter = loop_iter + 1
