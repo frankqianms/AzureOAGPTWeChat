@@ -270,12 +270,18 @@ def move_image_to_output(cur_folder_path, session, generated_image_seed):
         destination_folder_path = os.path.join(image_output_folder_path, session)
         if not os.path.exists(destination_folder_path):
             os.makedirs(destination_folder_path)
-        dest_file_name_str = session + "-" + generated_image_seed + ".png"
+        dest_file_name_str = session + " " + generated_image_seed + ".png"
         source_file_path = os.path.join(cur_folder_path, last_png_file)
         shutil.copy2(source_file_path, destination_folder_path + '\\' + dest_file_name_str)
         print("移动完成")
     else:
         print("未找到目标图片")
+
+
+def update_request_file_name_by_seed(file_path, generated_image_seed):
+    old_name = file_path.split('\\')[-1]
+    new_name = old_name.replace('.txt', '-' + generated_image_seed + '.txt')
+    return new_name
 
 
 def run_stable_diffusion_queue():
@@ -336,6 +342,9 @@ def run_stable_diffusion_queue():
                     if cur_folder_path:
                         print(str(datetime.now())[:-4] + "出图完成：" + file_content)
                         move_image_to_output(cur_folder_path, session, generated_image_seed)
+                        # 把请求的文件名添加上seed，方便和图片文件名对应起来
+                        new_file_name = update_request_file_name_by_seed(file_path, generated_image_seed)
+
                     else:
                         print(str(datetime.now())[:-4] + "无法找到SD webui出图文件夹 " + cur_folder_path)
                 # 处理完成不管成功失败，都移动request 文件到历史记录
@@ -343,5 +352,6 @@ def run_stable_diffusion_queue():
                 destination_folder = os.path.join(image_history_folder_path, session)
                 if not os.path.exists(destination_folder):
                     os.makedirs(destination_folder)
-                shutil.move(file_path, destination_folder)
+                shutil.copy2(file_path, destination_folder + '\\' + new_file_name)
+                os.remove(file_path)
         time.sleep(1)
