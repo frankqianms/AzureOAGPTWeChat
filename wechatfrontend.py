@@ -294,7 +294,7 @@ def get_chat_history_in_session_and_process(we_chat_bot, each_ses):
                     # Format date and time as string
                     dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
                     file_name_to_create = dt_string.replace(":", "-")
-                    file_name_to_create = each_ses + " " + file_name_to_create + ".txt"
+                    file_name_to_create = file_name_to_create + each_ses + ".txt"
                     with open(file_name_to_create, "w") as file:
                         file.write(user_prompt)
                         file.close()

@@ -64,13 +64,21 @@ def get_formatted_prompt_from_gpt(prompt):
     return response['choices'][0]['message']['content'].strip()
 
 
+def filter_by_sensitive_keywords(prefilter_prompt):
+    filtered_prompt = prefilter_prompt.strip().split(',')
+    filtered_prompt = [item for item in filtered_prompt if all(exclude_item not in item for exclude_item in sensitive_prompts)]
+    filtered_prompt = ','.join(filtered_prompt)
+    return filtered_prompt
+
+
 def process_sd_request(driver, user_prompt):
     # 从user_prompt获取关键词，发送给gpt生成适合SD的prompt
     # 发送给浏览器sd webui处理图片生成请求
     request_to_gpt = '''StableDiffusion是一款利用深度学习的文生图模型，支持通过使用提示词来产生新的图像，描述要包含或省略的元素。
 我在这里引入StableDiffusion算法中的Prompt概念，又被称为提示符。
-下面的prompt是用来指导AI绘画模型创作图像的。它们包含了图像的各种细节，如人物的外观、背景、颜色和光线效果，以及图像的主题和风格。这些prompt的格式经常包含括号内的加权数字，用于指定某些细节的重要性或强调。例如，"(masterpiece:1.5)"表示作品质量是非常重要的，多个括号也有类似作用。此外，如果使用中括号，如"{blue hair:white hair:0.3}"，这代表将蓝发和白发加以融合，蓝发占比为0.3。
-以下是用prompt帮助AI模型生成图像的例子：masterpiece,(bestquality),highlydetailed,ultra-detailed,  cold , solo , ( 1girl ) , detailedeyes , shinegoldeneyes ) ( longliverhair ) expressionless , ( long sleeves , puffy sleeves ) ,  ( white wings ) , shinehalo , ( heavymetal : 1 . 2 ) , ( metaljewelry ) ,  cross-lacedfootwear ( chain ) ,  ( Whitedoves : 1 . 2 ) 
+下面的prompt是用来指导AI绘画模型创作图像的。它们包含了图像的各种细节，如人物的外观、背景、颜色和光线效果，以及图像的主题和风格。这些prompt的格式经常包含括号内的加权数字，用于指定某些细节的重要性或强调。例如，"(masterpiece:1.5)"表示作品质量是非常重要的，多个括号也有类似作用。此外，如果使用中括号，如"{blue hair:white hair:0.3}"，这代表将蓝发和白发加以融合，蓝发占比为0.3。括号内的加权数字单个不应该超过1.5，平均数应该约等于1。
+如果prompt包含人体，请必须在prompt中包含给人物描绘完整的服装。如果对象主体不是人物，那么不要给出人物相关的prompt，例如衣物，服装等。
+以下是用prompt帮助AI模型生成图像的例子：cold , solo , ( 1girl ) , detailed eyes , shinegoldeneyes, ( longliverhair ), expressionless , ( long sleeves , puffy sleeves ) ,  ( white wings ) , shinehalo , ( heavymetal : 1 . 2 ) , ( metaljewelry ) ,  cross-lacedfootwear ( chain ) ,  ( Whitedoves : 1 . 2 ) 
 
 可以选择的prompt包括：
 
@@ -117,11 +125,22 @@ beautiful purple sunset at beach  （海边的美丽日落）
 in the ocean           （海中）
 on the ocean          （船上）
 
-仿照例子，并不局限于我给你的单词，给出一套详细描述“''' + user_prompt + '''”的prompt，注意：prompt不能超过80个。直接开始给出英文版的prompt不需要用自然语言描述。'''
+仿照例子，并不局限于我给你的单词，给出一套详细描述“''' + user_prompt + '''”的prompt，每个prompt以逗号分隔，注意：prompt不能超过80个。直接开始给出英文版的prompt不需要用自然语言描述。'''
     prompt_input = "(extremely detailed CG unity 8k wallpaper), (masterpiece), (best quality), (ultra-detailed), (best illustration), (best shadow), ultra-high res, (realistic, photo-realistic:1.2),"
 
+    translation_prompt = "翻译以下内容为英文：" + user_prompt
+    translated_prompt = get_formatted_prompt_from_gpt(translation_prompt)
+    # print(translated_prompt)
+    translated_prompt = translated_prompt.strip().replace('.', '')
+
+    # 过滤敏感词：
+    translated_prompt = filter_by_sensitive_keywords(translated_prompt)
+    # print(translated_prompt)
     formatted_user_prompt = get_formatted_prompt_from_gpt(request_to_gpt)
-    prompt_input = prompt_input + formatted_user_prompt
+
+    formatted_user_prompt = filter_by_sensitive_keywords(formatted_user_prompt)
+
+    prompt_input = prompt_input + translated_prompt + ", " + formatted_user_prompt
     # 获取prompt输入框
     prompt_text_area = driver.find_element(By.XPATH, "/html/body/gradio-app/div/div/div/div/div/div[2]/div[2]"
                                                      "/div/div[1]/div[1]/div[1]/div/div/div/div[2]/label/textarea")
@@ -160,7 +179,7 @@ on the ocean          （船上）
         time_taken_text = driver.find_element(By.XPATH, "/html/body/gradio-app/div/div/div/div/div/div[2]/div[2]/div/div[5]/div[2]/div[2]/div[3]/div[2]/div[2]/div/div/p[1]")
         # print(str(datetime.now())[:-4] + time_taken_text.text)
         time_taken_seconds = time_taken_text.text.split(":")[1][:-1].strip()
-        if time_taken_seconds < '2':
+        if float(time_taken_seconds) < 2.0:
             print(str(datetime.now())[:-4] + "出图失败")
         else:
             print(str(datetime.now())[:-4] + "出图成功，用时" + time_taken_seconds + "秒")
@@ -207,7 +226,16 @@ def initialize_sd_web_ui(driver):
     sampler_step = driver.find_element(By.XPATH,
                                        "/html/body/gradio-app/div/div/div/div/div/div[2]/div[2]/div/div[5]/div[1]/div[1]/div/div[2]/div[2]/div/input")
     sampler_step.clear()
-    sampler_step.send_keys(25)
+    sampler_step.send_keys(28)
+
+    # 设置面部修复
+    face_fix_check_box = driver.find_element(By.XPATH, "/html/body/gradio-app/div/div/div/div/div/div[2]/div[2]/div/div[5]/div[1]/div[2]/div[1]/label/input")
+    face_fix_check_box.click()
+
+    # 设置提示词相关性
+    cfg_scale_num = driver.find_element(By.XPATH, "/html/body/gradio-app/div/div/div/div/div/div[2]/div[2]/div/div[5]/div[1]/div[5]/div[2]/div/input")
+    cfg_scale_num.clear()
+    cfg_scale_num.send_keys(9)
 
     # 设置图片宽度
     image_width_box = driver.find_element(By.XPATH,
@@ -233,16 +261,21 @@ def find_current_sd_output_folder():
 
 
 def move_image_to_output(cur_folder_path, session, generated_image_seed):
+    time.sleep(1)
     png_files = [file for file in os.listdir(cur_folder_path) if file.endswith('.png')]
     last_png_file = png_files[-1]
     file_end = generated_image_seed + ".png"
     if last_png_file.endswith(file_end):
+        print("找到目标图片，正在移动中")
         destination_folder_path = os.path.join(image_output_folder_path, session)
         if not os.path.exists(destination_folder_path):
             os.makedirs(destination_folder_path)
         dest_file_name_str = session + "-" + generated_image_seed + ".png"
         source_file_path = os.path.join(cur_folder_path, last_png_file)
         shutil.copy2(source_file_path, destination_folder_path + '\\' + dest_file_name_str)
+        print("移动完成")
+    else:
+        print("未找到目标图片")
 
 
 def run_stable_diffusion_queue():
@@ -274,6 +307,7 @@ def run_stable_diffusion_queue():
     driver.get(url)
     # 最小化窗口
     # driver.minimize_window()
+    time.sleep(10)
     initialize_sd_web_ui(driver)
 
     while True:
@@ -295,13 +329,19 @@ def run_stable_diffusion_queue():
                 with open(file_path, 'r') as f:
                     file_content = f.read()
                 # 处理当前请求
+                print(str(datetime.now())[:-4] + "画图请求：" + file_path)
                 generated_image_seed = process_sd_request(driver, file_content)
                 if generated_image_seed:
                     cur_folder_path = find_current_sd_output_folder()
                     if cur_folder_path:
+                        print(str(datetime.now())[:-4] + "出图完成：" + file_content)
                         move_image_to_output(cur_folder_path, session, generated_image_seed)
                     else:
                         print(str(datetime.now())[:-4] + "无法找到SD webui出图文件夹 " + cur_folder_path)
-                # 处理完成不管成功失败，都删掉request 文件
-                os.remove(file_path)
-
+                # 处理完成不管成功失败，都移动request 文件到历史记录
+                print(str(datetime.now())[:-4] + "归档请求：" + file_path)
+                destination_folder = os.path.join(image_history_folder_path, session)
+                if not os.path.exists(destination_folder):
+                    os.makedirs(destination_folder)
+                shutil.move(file_path, destination_folder)
+        time.sleep(1)
