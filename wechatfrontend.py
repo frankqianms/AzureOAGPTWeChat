@@ -573,11 +573,10 @@ def start_gpt_bot_using_we_chat_frontend():
                 logging.info("当前状态：working, 处理消息队列中，当前等待消息的聊天有：" + str(
                     str_pending_processing_sessions))
 
-            image_queue_empty = not image_queue_not_empty()
-            if not image_queue_empty:
-                if loop_iter % 10 == 0:
-                    print(str(datetime.now())[:-4] + "当前状态：working, 处理图片队列中")
-                    logging.info("当前状态：working, 处理图片队列中")
+            if has_unsent_processed_images():
+                if loop_iter % 5 == 0:
+                    print(str(datetime.now())[:-4] + "当前状态：working, 发送已处理的图片中")
+                    logging.info("当前状态：working, 发送已处理的图片中")
 
             # 检测是否存在消息队列的会话不在循环遍历的会话中，已经被刷到靠很后面了
             delayed_sessions = [es[0] for es in pending_processing_sessions if es
@@ -593,10 +592,9 @@ def start_gpt_bot_using_we_chat_frontend():
             # 消息队列为空时
             request_queue_empty = not has_queued_message_in_request_queue()
             # 消息和图片队列已经空了，可以直接进入idle了
-            if request_queue_empty and image_queue_empty:
+            if request_queue_empty:
                 print(str(datetime.now())[:-4] + "当前进入状态：idle")
                 state_machine = 1
-                continue
 
         # 闲置期，只检查第一个窗口
         elif state_machine == 1:
@@ -620,6 +618,10 @@ def start_gpt_bot_using_we_chat_frontend():
                         state_machine = 0
                         print(str(datetime.now())[:-4] + "当前进入状态：working")
                 else:
-                    time.sleep(0.5)
 
+                    time.sleep(0.5)
+            # 如果收到了新的生成的图片，发送给对应聊天
+            if has_unsent_processed_images():
+                state_machine = 0
+                send_processed_image_from_gpt_to_wechat(kun_zai_bot)
         loop_iter = loop_iter + 1
