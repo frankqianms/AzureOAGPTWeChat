@@ -22,9 +22,9 @@ negative_prompt = "(NSFW: 2), paintings, sketches, (worst quality:2), (low quali
                   "age spot, glans, bad legs, error legs, bad feet, 6 more fingers on one hand, deformity, " \
                   "malformed limbs, extra limbs,"
 
-image_width = 512
-image_height = 768
-image_process_timeout = 30
+image_width = 600
+image_height = 900
+image_process_timeout = 60
 
 
 def get_formatted_prompt_from_gpt(prompt):
@@ -187,7 +187,7 @@ on the ocean          （船上）
             seed_text = driver.find_element(By.XPATH,
                                                   "/html/body/gradio-app/div/div/div/div/div/div[2]/div[2]/div/div[5]/div[2]/div[2]/div[3]/div[1]/div[2]/div").text
             seed_index_start = seed_text.find("Seed: ") + len("Seed: ")
-            seed_index_end = seed_text.find(", Size:")
+            seed_index_end = seed_text.find(", Face restoration:")
             seed_value = seed_text[seed_index_start: seed_index_end]
             return seed_value
     else:
@@ -266,16 +266,16 @@ def move_image_to_output(cur_folder_path, session, generated_image_seed):
     last_png_file = png_files[-1]
     file_end = generated_image_seed + ".png"
     if last_png_file.endswith(file_end):
-        print("找到目标图片，正在移动中")
+        print(str(datetime.now())[:-4] + "找到目标图片，正在移动中")
         destination_folder_path = os.path.join(image_output_folder_path, session)
         if not os.path.exists(destination_folder_path):
             os.makedirs(destination_folder_path)
         dest_file_name_str = session + " " + generated_image_seed + ".png"
         source_file_path = os.path.join(cur_folder_path, last_png_file)
         shutil.copy2(source_file_path, destination_folder_path + '\\' + dest_file_name_str)
-        print("移动完成")
+        print(str(datetime.now())[:-4] + "移动完成")
     else:
-        print("未找到目标图片")
+        print(str(datetime.now())[:-4] + "未找到目标图片")
 
 
 def update_request_file_name_by_seed(file_path, generated_image_seed):
