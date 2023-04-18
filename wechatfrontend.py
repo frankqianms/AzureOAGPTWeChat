@@ -618,10 +618,12 @@ def start_gpt_bot_using_we_chat_frontend():
                         state_machine = 0
                         print(str(datetime.now())[:-4] + "当前进入状态：working")
                 else:
+                    # 如果收到了新的生成的图片，进入working状态
+                    if has_unsent_processed_images():
+                        state_machine = 0
+                        print(str(datetime.now())[:-4] + "当前进入状态：working")
+                        # send_processed_image_from_gpt_to_wechat(kun_zai_bot)
+                    else:
+                        time.sleep(0.5)
 
-                    time.sleep(0.5)
-            # 如果收到了新的生成的图片，发送给对应聊天
-            if has_unsent_processed_images():
-                state_machine = 0
-                send_processed_image_from_gpt_to_wechat(kun_zai_bot)
         loop_iter = loop_iter + 1
