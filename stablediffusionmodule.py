@@ -1,6 +1,7 @@
 # 导入Selenium库
 import shutil
 
+import win32con
 from selenium.common import TimeoutException
 from selenium.webdriver.support.expected_conditions import visibility_of_element_located
 from selenium.webdriver.common.by import By
@@ -287,13 +288,16 @@ def update_request_file_name_by_seed(file_path, generated_image_seed):
 def run_stable_diffusion_queue():
     # # 启动Stable Diffusion webui
     # batch_file = "F:\\stable-diffusion-webui\\webui.bat"
+    # batch_folder = os.path.dirname(batch_file)
     # # Save the current working directory
     # original_dir = os.getcwd()
     # # Change the current working directory to the same drive as the batch file
     # os.chdir(os.path.splitdrive(batch_file)[0])
+    # os.chdir(batch_folder)
     # # Run the batch file using subprocess
-    # subprocess.call(batch_file, shell=True)
-    # time.sleep(10)
+    # process = subprocess.Popen(batch_file, shell=True, startupinfo=subprocess.STARTUPINFO(dwFlags=win32con.STARTF_USESHOWWINDOW, wShowWindow=win32con.SW_SHOWNORMAL | win32con.CREATE_NEW_CONSOLE))
+    # # subprocess.Popen(batch_file, shell=True)
+    # time.sleep(20)
     # # Change the current working directory back to the original directory
     # os.chdir(original_dir)
 
@@ -315,43 +319,46 @@ def run_stable_diffusion_queue():
     # driver.minimize_window()
     time.sleep(10)
     initialize_sd_web_ui(driver)
+    try:
+        while True:
+            # Image Requests 文件夹应该包含以聊天会话名作为文件夹名的，每一个聊天里未处理的图片请求，请求为txt格式的文字
+            #  - aimee
+            #    - time_stamp1.txt
+            #    - time_stamp2.txt
+            session_image_request_folders = [f for f in os.listdir(requests_folder_path) if os.path.isdir(os.path.join(requests_folder_path, f))]
 
-    while True:
-        # Image Requests 文件夹应该包含以聊天会话名作为文件夹名的，每一个聊天里未处理的图片请求，请求为txt格式的文字
-        #  - aimee
-        #    - time_stamp1.txt
-        #    - time_stamp2.txt
-        session_image_request_folders = [f for f in os.listdir(requests_folder_path) if os.path.isdir(os.path.join(requests_folder_path, f))]
+            # 遍历所有会话的文件夹
+            for folder in session_image_request_folders:
+                session = folder
+                # 获取所有txt的请求文件
+                files = [fs for fs in os.listdir(os.path.join(requests_folder_path, folder)) if fs.endswith('.txt')]
+                # 遍历会话的所有请求
+                for file in files:
+                    file_path = os.path.join(requests_folder_path, folder, file)
+                    # 获取当前请求txt
+                    with open(file_path, 'r') as f:
+                        file_content = f.read()
+                    # 处理当前请求
+                    print(str(datetime.now())[:-4] + "画图请求：" + file_path)
+                    generated_image_seed = process_sd_request(driver, file_content)
+                    if generated_image_seed:
+                        cur_folder_path = find_current_sd_output_folder()
+                        if cur_folder_path:
+                            print(str(datetime.now())[:-4] + "出图完成：" + file_content)
+                            move_image_to_output(cur_folder_path, session, generated_image_seed)
+                            # 把请求的文件名添加上seed，方便和图片文件名对应起来
+                            new_file_name = update_request_file_name_by_seed(file_path, generated_image_seed)
 
-        # 遍历所有会话的文件夹
-        for folder in session_image_request_folders:
-            session = folder
-            # 获取所有txt的请求文件
-            files = [fs for fs in os.listdir(os.path.join(requests_folder_path, folder)) if fs.endswith('.txt')]
-            # 遍历会话的所有请求
-            for file in files:
-                file_path = os.path.join(requests_folder_path, folder, file)
-                # 获取当前请求txt
-                with open(file_path, 'r') as f:
-                    file_content = f.read()
-                # 处理当前请求
-                print(str(datetime.now())[:-4] + "画图请求：" + file_path)
-                generated_image_seed = process_sd_request(driver, file_content)
-                if generated_image_seed:
-                    cur_folder_path = find_current_sd_output_folder()
-                    if cur_folder_path:
-                        print(str(datetime.now())[:-4] + "出图完成：" + file_content)
-                        move_image_to_output(cur_folder_path, session, generated_image_seed)
-                        # 把请求的文件名添加上seed，方便和图片文件名对应起来
-                        new_file_name = update_request_file_name_by_seed(file_path, generated_image_seed)
-
-                    else:
-                        print(str(datetime.now())[:-4] + "无法找到SD webui出图文件夹 " + cur_folder_path)
-                # 处理完成不管成功失败，都移动request 文件到历史记录
-                print(str(datetime.now())[:-4] + "归档请求：" + file_path)
-                destination_folder = os.path.join(image_history_folder_path, session)
-                if not os.path.exists(destination_folder):
-                    os.makedirs(destination_folder)
-                shutil.copy2(file_path, destination_folder + '\\' + new_file_name)
-                os.remove(file_path)
-        time.sleep(1)
+                        else:
+                            print(str(datetime.now())[:-4] + "无法找到SD webui出图文件夹 " + cur_folder_path)
+                    # 处理完成不管成功失败，都移动request 文件到历史记录
+                    print(str(datetime.now())[:-4] + "归档请求：" + file_path)
+                    destination_folder = os.path.join(image_history_folder_path, session)
+                    if not os.path.exists(destination_folder):
+                        os.makedirs(destination_folder)
+                    shutil.copy2(file_path, destination_folder + '\\' + new_file_name)
+                    os.remove(file_path)
+            time.sleep(1)
+    except KeyboardInterrupt:
+        pass
+        # process.kill()
