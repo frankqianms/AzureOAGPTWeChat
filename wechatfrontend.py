@@ -295,6 +295,7 @@ def get_chat_history_in_session_and_process(we_chat_bot, each_ses):
                     dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
                     file_name_to_create = dt_string.replace(":", "-")
                     file_name_to_create = file_name_to_create + each_ses + ".txt"
+                    file_name_to_create = os.path.join(request_folder_session_path, file_name_to_create)
                     with open(file_name_to_create, "w") as file:
                         file.write(user_prompt)
                         file.close()
@@ -599,10 +600,9 @@ def start_gpt_bot_using_we_chat_frontend():
 
         # 闲置期，只检查第一个窗口
         elif state_machine == 1:
-            if loop_iter == 60:
+            if loop_iter % 60 == 0:
                 # 30 秒按一次键盘，防止关屏或者休眠
                 keyboard.press_and_release('alt + ctrl')
-                loop_iter = 1
             if top_has_changed:
                 kun_zai_bot.ChatWith(last_top_session)
                 if top_message_has_changed:
@@ -621,7 +621,5 @@ def start_gpt_bot_using_we_chat_frontend():
                         print(str(datetime.now())[:-4] + "当前进入状态：working")
                 else:
                     time.sleep(0.5)
-                    # 继续idle状态
-                    continue
 
         loop_iter = loop_iter + 1
