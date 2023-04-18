@@ -314,7 +314,7 @@ def get_chat_history_in_session_and_process(we_chat_bot, each_ses):
                     session_request_queue[each_ses].append([each_last_message[1], None, False])
                     logging.info("Session: " + each_ses + ", Request queue after adding: " + str(
                         session_request_queue[each_ses]))
-                    into_working_mode = True
+                into_working_mode = True
             else:
                 if each_last_message[1].startswith(tuple(chat_hint)):
                     if '重置' in each_last_message[1]:
