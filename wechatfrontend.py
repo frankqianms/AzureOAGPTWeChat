@@ -335,6 +335,7 @@ def has_queued_message_in_request_queue():
             return True
     return False
 
+
 def has_unsent_processed_images():
     # Loop through all folders in the directory
     for folder in os.listdir(image_output_folder_path):
@@ -353,7 +354,7 @@ def has_unsent_processed_images():
 def has_unprocessed_images():
     for folder in os.listdir(requests_folder_path):
         # Create full path of the current folder
-        path = os.path.join(image_output_folder_path, folder)
+        path = os.path.join(requests_folder_path, folder)
         # Check if the current path is a directory
         if os.path.isdir(path):
             # Check if the directory is empty
@@ -366,7 +367,7 @@ def has_unprocessed_images():
 
 
 def image_queue_not_empty():
-    return has_unprocessed_images() and has_unsent_processed_images()
+    return has_unprocessed_images() or has_unsent_processed_images()
 
 
 def send_processed_image_from_gpt_to_wechat(we_chat_bot, each_ses=None):
