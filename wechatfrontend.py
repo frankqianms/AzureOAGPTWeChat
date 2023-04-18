@@ -374,6 +374,7 @@ def send_processed_image_from_gpt_to_wechat(we_chat_bot, each_ses=None):
     if not each_ses:
         # 处理所有未发送的图片
         for folder in os.listdir(image_output_folder_path):
+            each_ses = folder
             # Create full path of the current folder
             path = os.path.join(image_output_folder_path, folder)
             # Check if the current path is a directory
@@ -382,13 +383,13 @@ def send_processed_image_from_gpt_to_wechat(we_chat_bot, each_ses=None):
                 if not os.listdir(path):
                     continue
                 else:
-                    we_chat_bot.ChatWith(folder)
                     ses_path = os.path.join(image_output_folder_path, folder)
                     png_files = [file for file in os.listdir(ses_path) if file.endswith('.png')]
                     for image in png_files:
                         img_path = os.path.join(ses_path, image)
-                        WxUtils.SetClipboard(img_path)
-                        we_chat_bot.SendClipboard()
+                        img_path_str = img_path.replace('\\', '/')
+                        we_chat_bot.ChatWith(each_ses)
+                        we_chat_bot.SendFiles(img_path_str)
                         destination_folder_path = os.path.join(image_history_folder_path, each_ses)
                         if not os.path.exists(destination_folder_path):
                             os.makedirs(destination_folder_path)
@@ -396,7 +397,7 @@ def send_processed_image_from_gpt_to_wechat(we_chat_bot, each_ses=None):
                         # Format date and time as string
                         dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
                         file_name_to_create = dt_string.replace(":", "-")
-                        file_name_to_create = file_name_to_create + image
+                        file_name_to_create = file_name_to_create + " " + image
                         shutil.copy2(img_path, destination_folder_path + '\\' + file_name_to_create)
                         os.remove(img_path)
     else:
@@ -408,12 +409,12 @@ def send_processed_image_from_gpt_to_wechat(we_chat_bot, each_ses=None):
             if not os.listdir(ses_path):
                 pass
             else:
-                we_chat_bot.ChatWith(each_ses)
                 png_files = [file for file in os.listdir(ses_path) if file.endswith('.png')]
                 for image in png_files:
                     img_path = os.path.join(ses_path, image)
-                    WxUtils.SetClipboard(img_path)
-                    we_chat_bot.SendClipboard()
+                    img_path_str = img_path.replace('\\', '/')
+                    we_chat_bot.ChatWith(each_ses)
+                    we_chat_bot.SendFiles(img_path_str)
                     destination_folder_path = os.path.join(image_history_folder_path, each_ses)
                     if not os.path.exists(destination_folder_path):
                         os.makedirs(destination_folder_path)
@@ -421,7 +422,7 @@ def send_processed_image_from_gpt_to_wechat(we_chat_bot, each_ses=None):
                     # Format date and time as string
                     dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
                     file_name_to_create = dt_string.replace(":", "-")
-                    file_name_to_create = file_name_to_create + image
+                    file_name_to_create = file_name_to_create + " " + image
                     shutil.copy2(img_path, destination_folder_path + '\\' + file_name_to_create)
                     os.remove(img_path)
 
@@ -565,16 +566,17 @@ def start_gpt_bot_using_we_chat_frontend():
                                            len(session_request_queue[es]) != 0]
             str_pending_processing_sessions = [[key, str(sum([1 for item in val_list if not item[2]])) + " 条消息处理中"]
                                                for key, val_list in session_request_queue.items() if len(val_list) > 0]
-
-            print(str(datetime.now())[:-4] + "当前状态：working, 处理消息队列中，当前等待消息的聊天有：" + str(
-                str_pending_processing_sessions))
-            logging.info("当前状态：working, 处理消息队列中，当前等待消息的聊天有：" + str(
-                str_pending_processing_sessions))
+            if len(str_pending_processing_sessions) > 0:
+                print(str(datetime.now())[:-4] + "当前状态：working, 处理消息队列中，当前等待消息的聊天有：" + str(
+                    str_pending_processing_sessions))
+                logging.info("当前状态：working, 处理消息队列中，当前等待消息的聊天有：" + str(
+                    str_pending_processing_sessions))
 
             image_queue_empty = not image_queue_not_empty()
             if not image_queue_empty:
-                print(str(datetime.now())[:-4] + "当前状态：working, 处理图片队列中")
-                logging.info("当前状态：working, 处理图片队列中")
+                if loop_iter % 10 == 0:
+                    print(str(datetime.now())[:-4] + "当前状态：working, 处理图片队列中")
+                    logging.info("当前状态：working, 处理图片队列中")
 
             # 检测是否存在消息队列的会话不在循环遍历的会话中，已经被刷到靠很后面了
             delayed_sessions = [es[0] for es in pending_processing_sessions if es
@@ -608,7 +610,6 @@ def start_gpt_bot_using_we_chat_frontend():
                     if get_chat_history_in_session_and_process(kun_zai_bot, last_top_session):
                         state_machine = 0
                         print(str(datetime.now())[:-4] + "当前进入状态：working")
-                        kun_zai_bot.ChatWith(last_top_session)
                 else:
                     # 应该没有这种情况
                     print(str(datetime.now())[:-4] + "错误情况发生")
