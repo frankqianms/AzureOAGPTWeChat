@@ -290,7 +290,7 @@ def get_chat_history_in_session_and_process(we_chat_bot, each_ses):
                     request_folder_session_path = os.path.join(requests_folder_path, each_ses)
                     if not os.path.exists(request_folder_session_path):
                         os.makedirs(request_folder_session_path)
-                    now = datetime.datetime.now()
+                    now = datetime.now()
                     # Format date and time as string
                     dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
                     file_name_to_create = dt_string.replace(":", "-")
@@ -391,7 +391,7 @@ def send_processed_image_from_gpt_to_wechat(we_chat_bot, each_ses=None):
                         destination_folder_path = os.path.join(image_history_folder_path, each_ses)
                         if not os.path.exists(destination_folder_path):
                             os.makedirs(destination_folder_path)
-                        now = datetime.datetime.now()
+                        now = datetime.now()
                         # Format date and time as string
                         dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
                         file_name_to_create = dt_string.replace(":", "-")
@@ -416,7 +416,7 @@ def send_processed_image_from_gpt_to_wechat(we_chat_bot, each_ses=None):
                     destination_folder_path = os.path.join(image_history_folder_path, each_ses)
                     if not os.path.exists(destination_folder_path):
                         os.makedirs(destination_folder_path)
-                    now = datetime.datetime.now()
+                    now = datetime.now()
                     # Format date and time as string
                     dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
                     file_name_to_create = dt_string.replace(":", "-")
