@@ -21,6 +21,8 @@ gpt_max_token = 1500
 max_token_per_session = 20
 wechat_one_msg_upper_limit = 600
 
+sensitive_prompts = ["nude", "pussy", "topless", "breasts", "breast", "boob"]
+
 
 # 日志文件
 folder_path = "logs"
