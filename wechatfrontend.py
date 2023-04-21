@@ -287,15 +287,12 @@ def get_chat_history_in_session_and_process(we_chat_bot, each_ses):
                 if each_last_message[1].startswith(image_hint):
                     # 图片流程
                     user_prompt = each_last_message[1][len(image_hint):]
-                    request_folder_session_path = os.path.join(requests_folder_path, each_ses)
-                    if not os.path.exists(request_folder_session_path):
-                        os.makedirs(request_folder_session_path)
                     now = datetime.now()
                     # Format date and time as string
                     dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
                     file_name_to_create = dt_string.replace(":", "-")
                     file_name_to_create = file_name_to_create + ' ' + each_ses + ".txt"
-                    file_name_to_create = os.path.join(request_folder_session_path, file_name_to_create)
+                    file_name_to_create = os.path.join(requests_folder_path, file_name_to_create)
                     with open(file_name_to_create, "w") as file:
                         file.write(user_prompt)
                         file.close()
@@ -338,33 +335,17 @@ def has_queued_message_in_request_queue():
 
 
 def has_unsent_processed_images():
-    # Loop through all folders in the directory
-    for folder in os.listdir(image_output_folder_path):
-        # Create full path of the current folder
-        path = os.path.join(image_output_folder_path, folder)
-        # Check if the current path is a directory
-        if os.path.isdir(path):
-            # Check if the directory is empty
-            if not os.listdir(path):
-                continue
-            else:
-                return True
-    return False
+    if not os.listdir(image_output_folder_path):
+        return False
+    else:
+        return True
 
 
 def has_unprocessed_images():
-    for folder in os.listdir(requests_folder_path):
-        # Create full path of the current folder
-        path = os.path.join(requests_folder_path, folder)
-        # Check if the current path is a directory
-        if os.path.isdir(path):
-            # Check if the directory is empty
-            if not os.listdir(path):
-                continue
-            else:
-                return True
-
-    return False
+    if not os.listdir(requests_folder_path):
+        return False
+    else:
+        return True
 
 
 def image_queue_not_empty():
@@ -372,60 +353,23 @@ def image_queue_not_empty():
 
 
 def send_processed_image_from_gpt_to_wechat(we_chat_bot, each_ses=None):
-    if not each_ses:
-        # 处理所有未发送的图片
-        for folder in os.listdir(image_output_folder_path):
-            each_ses = folder
-            # Create full path of the current folder
-            path = os.path.join(image_output_folder_path, folder)
-            # Check if the current path is a directory
-            if os.path.isdir(path):
-                # Check if the directory is empty
-                if not os.listdir(path):
-                    continue
-                else:
-                    ses_path = os.path.join(image_output_folder_path, folder)
-                    png_files = [file for file in os.listdir(ses_path) if file.endswith('.png')]
-                    for image in png_files:
-                        img_path = os.path.join(ses_path, image)
-                        img_path_str = img_path.replace('\\', '/')
-                        we_chat_bot.ChatWith(each_ses)
-                        we_chat_bot.SendFiles(img_path_str)
-                        destination_folder_path = os.path.join(image_history_folder_path, each_ses)
-                        if not os.path.exists(destination_folder_path):
-                            os.makedirs(destination_folder_path)
-                        now = datetime.now()
-                        # Format date and time as string
-                        dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
-                        file_name_to_create = dt_string.replace(":", "-")
-                        file_name_to_create = file_name_to_create + " " + image
-                        shutil.copy2(img_path, destination_folder_path + '\\' + file_name_to_create)
-                        os.remove(img_path)
-    else:
-        # 处理当前会话的图片
-        ses_path = os.path.join(image_output_folder_path, each_ses)
-        # Check if the current path is a directory
-        if os.path.isdir(ses_path):
-            # Check if the directory is empty
-            if not os.listdir(ses_path):
-                pass
-            else:
-                png_files = [file for file in os.listdir(ses_path) if file.endswith('.png')]
-                for image in png_files:
-                    img_path = os.path.join(ses_path, image)
-                    img_path_str = img_path.replace('\\', '/')
-                    we_chat_bot.ChatWith(each_ses)
-                    we_chat_bot.SendFiles(img_path_str)
-                    destination_folder_path = os.path.join(image_history_folder_path, each_ses)
-                    if not os.path.exists(destination_folder_path):
-                        os.makedirs(destination_folder_path)
-                    now = datetime.now()
-                    # Format date and time as string
-                    dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
-                    file_name_to_create = dt_string.replace(":", "-")
-                    file_name_to_create = file_name_to_create + " " + image
-                    shutil.copy2(img_path, destination_folder_path + '\\' + file_name_to_create)
-                    os.remove(img_path)
+    png_files = [file for file in os.listdir(image_output_folder_path) if file.endswith('.png')]
+    for image in png_files:
+        if each_ses:
+            if not image.startswith(each_ses):
+                continue
+
+        img_path = os.path.join(image_output_folder_path, image)
+        img_path_str = img_path.replace('\\', '/')
+        we_chat_bot.ChatWith(each_ses)
+        we_chat_bot.SendFiles(img_path_str)
+        now = datetime.now()
+        # Format date and time as string
+        dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
+        file_name_to_create = dt_string.replace(":", "-")
+        file_name_to_create = file_name_to_create + " " + image
+        shutil.copy2(img_path, image_history_folder_path + '\\' + file_name_to_create)
+        os.remove(img_path)
 
 
 def send_processed_message_from_gpt_to_wechat(we_chat_bot, each_ses):
