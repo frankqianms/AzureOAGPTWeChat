@@ -23,8 +23,8 @@ negative_prompt = "(NSFW: 2), paintings, sketches, (worst quality:2), (low quali
                   "age spot, glans, bad legs, error legs, bad feet, 6 more fingers on one hand, deformity, " \
                   "malformed limbs, extra limbs,"
 
-image_width = 600
-image_height = 900
+image_width = 512
+image_height = 768
 image_process_timeout = 60
 
 
