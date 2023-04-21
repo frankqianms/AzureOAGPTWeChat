@@ -190,14 +190,14 @@ on the ocean          （船上）
             seed_index_start = seed_text.find("Seed: ") + len("Seed: ")
             seed_index_end = seed_text.find(", Face restoration:")
             seed_value = seed_text[seed_index_start: seed_index_end]
-            return seed_value
+            return seed_value, prompt_input
     else:
         print(str(datetime.now())[:-4] + "出图超时，中止出图")
         # 定位中止按钮，并点击
         stop_button = driver.find_element(By.XPATH, "/html/body/gradio-app/div/div/div/div/div/div[2]/div[2]/div/div[1]/div[2]/div[1]/button[1]")
         stop_button.click()
 
-    return None
+    return None, prompt_input
 
 
 def initialize_sd_web_ui(driver):
@@ -268,12 +268,9 @@ def move_image_to_output(cur_folder_path, session, generated_image_seed):
     file_end = generated_image_seed + ".png"
     if last_png_file.endswith(file_end):
         print(str(datetime.now())[:-4] + "找到目标图片，正在移动中")
-        destination_folder_path = os.path.join(image_output_folder_path, session)
-        if not os.path.exists(destination_folder_path):
-            os.makedirs(destination_folder_path)
         dest_file_name_str = session + " " + generated_image_seed + ".png"
         source_file_path = os.path.join(cur_folder_path, last_png_file)
-        shutil.copy2(source_file_path, destination_folder_path + '\\' + dest_file_name_str)
+        shutil.copy2(source_file_path, image_output_folder_path + '\\' + dest_file_name_str)
         print(str(datetime.now())[:-4] + "移动完成")
     else:
         print(str(datetime.now())[:-4] + "未找到目标图片")
@@ -327,37 +324,36 @@ def run_stable_diffusion_queue():
             #    - time_stamp2.txt
             session_image_request_folders = [f for f in os.listdir(requests_folder_path) if os.path.isdir(os.path.join(requests_folder_path, f))]
 
-            # 遍历所有会话的文件夹
-            for folder in session_image_request_folders:
-                session = folder
-                # 获取所有txt的请求文件
-                files = [fs for fs in os.listdir(os.path.join(requests_folder_path, folder)) if fs.endswith('.txt')]
-                # 遍历会话的所有请求
-                for file in files:
-                    file_path = os.path.join(requests_folder_path, folder, file)
-                    # 获取当前请求txt
-                    with open(file_path, 'r') as f:
-                        file_content = f.read()
-                    # 处理当前请求
-                    print(str(datetime.now())[:-4] + "画图请求：" + file_path)
-                    generated_image_seed = process_sd_request(driver, file_content)
-                    if generated_image_seed:
-                        cur_folder_path = find_current_sd_output_folder()
-                        if cur_folder_path:
-                            print(str(datetime.now())[:-4] + "出图完成：" + file_content)
-                            move_image_to_output(cur_folder_path, session, generated_image_seed)
-                            # 把请求的文件名添加上seed，方便和图片文件名对应起来
-                            new_file_name = update_request_file_name_by_seed(file_path, generated_image_seed)
+            # 遍历所有出图请求
+            files = [fs for fs in os.listdir(requests_folder_path) if fs.endswith('.txt')]
+            for file in files:
+                file_path = os.path.join(requests_folder_path, file)
+                # 获取当前请求txt
+                with open(file_path, 'r') as f:
+                    file_content = f.read()
+                # 处理当前请求
+                print(str(datetime.now())[:-4] + "画图请求：" + file_path)
+                print(str(datetime.now())[:-4] + "用户输入：" + file_content)
+                generated_image_seed, generated_prompt = process_sd_request(driver, file_content)
+                print(str(datetime.now())[:-4] + "SD输入：" + generated_prompt)
+                # 把翻译的sd prompt添加到请求txt中
+                with open(file_path, 'a') as f:
+                    f.write(generated_prompt+'\n')
 
-                        else:
-                            print(str(datetime.now())[:-4] + "无法找到SD webui出图文件夹 " + cur_folder_path)
-                    # 处理完成不管成功失败，都移动request 文件到历史记录
-                    print(str(datetime.now())[:-4] + "归档请求：" + file_path)
-                    destination_folder = os.path.join(image_history_folder_path, session)
-                    if not os.path.exists(destination_folder):
-                        os.makedirs(destination_folder)
-                    shutil.copy2(file_path, destination_folder + '\\' + new_file_name)
-                    os.remove(file_path)
+                if generated_image_seed:
+                    cur_folder_path = find_current_sd_output_folder()
+                    if cur_folder_path:
+                        print(str(datetime.now())[:-4] + "出图完成：" + file_content)
+                        move_image_to_output(cur_folder_path, generated_image_seed)
+                        # 把请求的文件名添加上seed，方便和图片文件名对应起来
+                        new_file_name = update_request_file_name_by_seed(file_path, generated_image_seed)
+
+                    else:
+                        print(str(datetime.now())[:-4] + "无法找到SD webui出图文件夹 " + cur_folder_path)
+                # 处理完成不管成功失败，都移动request 文件到历史记录
+                print(str(datetime.now())[:-4] + "归档请求：" + file_path)
+                shutil.copy2(file_path, image_history_folder_path + '\\' + new_file_name)
+                os.remove(file_path)
             time.sleep(1)
     except KeyboardInterrupt:
         pass
