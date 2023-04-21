@@ -355,18 +355,19 @@ def image_queue_not_empty():
 def send_processed_image_from_gpt_to_wechat(we_chat_bot, each_ses=None):
     png_files = [file for file in os.listdir(image_output_folder_path) if file.endswith('.png')]
     for image in png_files:
+        cur_session = image.split(" ")[0]
         if each_ses:
-            if not image.startswith(each_ses):
+            if each_ses != cur_session:
                 continue
 
         img_path = os.path.join(image_output_folder_path, image)
         img_path_str = img_path.replace('\\', '/')
         file_size = os.path.getsize(img_path_str)
         if file_size > 10000:  # 10kb以上才是和谐图片，10kb以下都是全黑屏蔽图片
-            we_chat_bot.ChatWith(each_ses)
+            we_chat_bot.ChatWith(cur_session)
             we_chat_bot.SendFiles(img_path_str)
         else:
-            we_chat_bot.ChatWith(each_ses)
+            we_chat_bot.ChatWith(cur_session)
             we_chat_bot.SendMsg("图片生成失败")
         now = datetime.now()
         # Format date and time as string

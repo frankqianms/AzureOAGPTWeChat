@@ -293,7 +293,7 @@ def move_image_to_output(cur_folder_path, session, generated_image_seed):
 
 def update_request_file_name_by_seed(file_path, generated_image_seed):
     old_name = file_path.split('\\')[-1]
-    new_name = old_name.replace('.txt', '-' + generated_image_seed + '.txt')
+    new_name = old_name.replace('.txt', ' ' + generated_image_seed + '.txt')
     return new_name
 
 
