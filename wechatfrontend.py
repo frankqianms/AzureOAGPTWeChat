@@ -361,8 +361,13 @@ def send_processed_image_from_gpt_to_wechat(we_chat_bot, each_ses=None):
 
         img_path = os.path.join(image_output_folder_path, image)
         img_path_str = img_path.replace('\\', '/')
-        we_chat_bot.ChatWith(each_ses)
-        we_chat_bot.SendFiles(img_path_str)
+        file_size = os.path.getsize(img_path_str)
+        if file_size > 10000:  # 10kb以上才是和谐图片，10kb以下都是全黑屏蔽图片
+            we_chat_bot.ChatWith(each_ses)
+            we_chat_bot.SendFiles(img_path_str)
+        else:
+            we_chat_bot.ChatWith(each_ses)
+            we_chat_bot.SendMsg("图片生成失败")
         now = datetime.now()
         # Format date and time as string
         dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
