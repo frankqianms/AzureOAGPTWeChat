@@ -163,7 +163,7 @@ on the ocean          （船上）
     # 清除历史内容
     prompt_text_area.clear()
     prompt_text_area.send_keys(prompt_input)
-
+    time.sleep(1)
     # 定位生成按钮，并点击
     generate_button = driver.find_element(By.XPATH, "//*[contains(text(), '生成')]")
     console_log("开始出图")
