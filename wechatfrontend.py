@@ -67,7 +67,7 @@ class GPTRequestThread(threading.Thread):
                 presence_penalty=0,
                 stop=None)
         except Exception as ex:
-            print(str(datetime.now())[:-4] + "Thread: " + self.session +
+            console_log("Thread: " + self.session +
                   " has error with Azure OpenAI API call: " + str(ex))
             logging.error(ex)
             if openai.api_key == key1:
@@ -112,7 +112,7 @@ class GPTRequestThread(threading.Thread):
 
                             # 将回复填入队列中第一个消息的回复里
                             each_query[1] = ai_reply
-                            # print(str(datetime.now())[:-4] + "\n会话 " + self.session + " ，问题 " +
+                            # console_log("\n会话 " + self.session + " ，问题 " +
                             # each_query[0] + " 获取gpt回答成功\n")
                             logging.info(
                                 "Thread: " + self.name + ", After sending Query, Reply stored is: " + each_query[1])
@@ -402,7 +402,7 @@ def send_processed_message_from_gpt_to_wechat(we_chat_bot, each_ses):
                     send_msg_to_wechat_using_clipboard(we_chat_bot, reply)
 
                     logging.info("Session: " + each_ses + ", Reply sent: " + reply)
-                    # print(str(datetime.now())[:-4] + "\n回复给 " + each_ses + "\n问题：" +
+                    # console_log("\n回复给 " + each_ses + "\n问题：" +
                     # each_query_in_session[0] + "\n回答：" + each_query_in_session[1])
                     # 回复完后标记这个请求为已发送
                     each_query_in_session[2] = True
@@ -437,7 +437,7 @@ def start_gpt_bot_using_we_chat_frontend():
     init_all_session_threads(kun_zai_bot.GetSessionList())
     # 0: working, 1: idle
     state_machine = 1
-    print(str(datetime.now())[:-4] + "当前进入状态：idle")
+    console_log("当前进入状态：idle")
     logging.info("初始化完成，当前进入状态：idle")
     # 初始化，待机状态，选中第一个非忽略聊天窗口
     top_session = locate_top_valid_session(kun_zai_bot)
@@ -512,14 +512,14 @@ def start_gpt_bot_using_we_chat_frontend():
             str_pending_processing_sessions = [[key, str(sum([1 for item in val_list if not item[2]])) + " 条消息处理中"]
                                                for key, val_list in session_request_queue.items() if len(val_list) > 0]
             if len(str_pending_processing_sessions) > 0:
-                print(str(datetime.now())[:-4] + "当前状态：working, 处理消息队列中，当前等待消息的聊天有：" + str(
+                console_log("当前状态：working, 处理消息队列中，当前等待消息的聊天有：" + str(
                     str_pending_processing_sessions))
                 logging.info("当前状态：working, 处理消息队列中，当前等待消息的聊天有：" + str(
                     str_pending_processing_sessions))
 
             if has_unsent_processed_images():
-                if loop_iter % 5 == 0:
-                    print(str(datetime.now())[:-4] + "当前状态：working, 发送已处理的图片中")
+                if loop_iter % 2 == 0:
+                    console_log("当前状态：working, 发送已处理的图片中")
                     logging.info("当前状态：working, 发送已处理的图片中")
 
             # 检测是否存在消息队列的会话不在循环遍历的会话中，已经被刷到靠很后面了
@@ -537,7 +537,7 @@ def start_gpt_bot_using_we_chat_frontend():
             request_queue_empty = not has_queued_message_in_request_queue()
             # 消息和图片队列已经空了，可以直接进入idle了
             if request_queue_empty:
-                print(str(datetime.now())[:-4] + "当前进入状态：idle")
+                console_log("当前进入状态：idle")
                 state_machine = 1
 
         # 闲置期，只检查第一个窗口
@@ -551,21 +551,21 @@ def start_gpt_bot_using_we_chat_frontend():
                     # 进入工作状态，添加消息到队列
                     if get_chat_history_in_session_and_process(kun_zai_bot, last_top_session):
                         state_machine = 0
-                        print(str(datetime.now())[:-4] + "当前进入状态：working")
+                        console_log("当前进入状态：working")
                 else:
                     # 应该没有这种情况
-                    print(str(datetime.now())[:-4] + "错误情况发生")
+                    console_log("错误情况发生")
                     pass
             else:
                 if top_message_has_changed:
                     if get_chat_history_in_session_and_process(kun_zai_bot, last_top_session):
                         state_machine = 0
-                        print(str(datetime.now())[:-4] + "当前进入状态：working")
+                        console_log("当前进入状态：working")
                 else:
                     # 如果收到了新的生成的图片，进入working状态
                     if has_unsent_processed_images():
                         state_machine = 0
-                        print(str(datetime.now())[:-4] + "当前进入状态：working")
+                        console_log("当前进入状态：working")
                         # send_processed_image_from_gpt_to_wechat(kun_zai_bot)
                     else:
                         time.sleep(0.5)

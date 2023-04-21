@@ -16,6 +16,7 @@ import os
 from selenium.webdriver.support.wait import WebDriverWait
 import openai
 from envconfig import *
+import re
 
 
 negative_prompt = "(NSFW: 2), paintings, sketches, (worst quality:2), (low quality:2), (normal quality:2), " \
@@ -44,7 +45,7 @@ def get_formatted_prompt_from_gpt(prompt):
             presence_penalty=0,
             stop=None)
     except Exception as ex:
-        print(str(datetime.now())[:-4] + " has error with Azure OpenAI API call: " + str(ex))
+        console_log("has error with Azure OpenAI API call: " + str(ex))
         if openai.api_key == key1:
             openai.api_key = key2
             openai.api_base = api_base2
@@ -67,7 +68,12 @@ def get_formatted_prompt_from_gpt(prompt):
 
 def filter_by_sensitive_keywords(prefilter_prompt):
     filtered_prompt = prefilter_prompt.strip().split(',')
-    filtered_prompt = [item for item in filtered_prompt if all(exclude_item not in item for exclude_item in sensitive_prompts)]
+    # filtered_prompt = [item for item in filtered_prompt if all(exclude_item not in item for exclude_item in sensitive_prompts)]
+    for index, string in enumerate(filtered_prompt):
+        for keyword in sensitive_prompts:
+            regex = re.compile(re.escape(keyword), re.IGNORECASE)
+            filtered_prompt[index] = regex.sub('', string)
+
     filtered_prompt = ','.join(filtered_prompt)
     return filtered_prompt
 
@@ -151,7 +157,7 @@ on the ocean          （船上）
 
     # 定位生成按钮，并点击
     generate_button = driver.find_element(By.XPATH, "//*[contains(text(), '生成')]")
-    print(str(datetime.now())[:-4] + "开始出图")
+    console_log("开始出图")
     generate_button.click()
 
     # 判断出图是否成功
@@ -168,7 +174,7 @@ on the ocean          （船上）
         button_skip = driver.find_element(By.ID, 'txt2img_skip')
         button_style = button_skip.get_attribute('style')
         if button_style == 'display: none;':
-            print(str(datetime.now())[:-4] + "出图结束")
+            console_log("出图结束")
             image_process_done = True
             break
         elif button_style == 'display: block;':
@@ -181,9 +187,9 @@ on the ocean          （船上）
         # print(str(datetime.now())[:-4] + time_taken_text.text)
         time_taken_seconds = time_taken_text.text.split(":")[1][:-1].strip()
         if float(time_taken_seconds) < 2.0:
-            print(str(datetime.now())[:-4] + "出图失败")
+            console_log("出图失败")
         else:
-            print(str(datetime.now())[:-4] + "出图成功，用时" + time_taken_seconds + "秒")
+            console_log("出图成功，用时" + time_taken_seconds + "秒")
             # 获取seed ID，防止发错图给聊天
             seed_text = driver.find_element(By.XPATH,
                                                   "/html/body/gradio-app/div/div/div/div/div/div[2]/div[2]/div/div[5]/div[2]/div[2]/div[3]/div[1]/div[2]/div").text
@@ -192,7 +198,7 @@ on the ocean          （船上）
             seed_value = seed_text[seed_index_start: seed_index_end]
             return seed_value, prompt_input
     else:
-        print(str(datetime.now())[:-4] + "出图超时，中止出图")
+        console_log("出图超时，中止出图")
         # 定位中止按钮，并点击
         stop_button = driver.find_element(By.XPATH, "/html/body/gradio-app/div/div/div/div/div/div[2]/div[2]/div/div[1]/div[2]/div[1]/button[1]")
         stop_button.click()
@@ -267,13 +273,13 @@ def move_image_to_output(cur_folder_path, session, generated_image_seed):
     last_png_file = png_files[-1]
     file_end = generated_image_seed + ".png"
     if last_png_file.endswith(file_end):
-        print(str(datetime.now())[:-4] + "找到目标图片，正在移动中")
+        console_log("找到目标图片，正在移动中")
         dest_file_name_str = session + " " + generated_image_seed + ".png"
         source_file_path = os.path.join(cur_folder_path, last_png_file)
         shutil.copy2(source_file_path, image_output_folder_path + '\\' + dest_file_name_str)
-        print(str(datetime.now())[:-4] + "移动完成")
+        console_log("移动完成")
     else:
-        print(str(datetime.now())[:-4] + "未找到目标图片")
+        console_log("未找到目标图片")
 
 
 def update_request_file_name_by_seed(file_path, generated_image_seed):
@@ -327,31 +333,32 @@ def run_stable_diffusion_queue():
             # 遍历所有出图请求
             files = [fs for fs in os.listdir(requests_folder_path) if fs.endswith('.txt')]
             for file in files:
+                session_name = file.split(' ')[2][:-4]
                 file_path = os.path.join(requests_folder_path, file)
                 # 获取当前请求txt
                 with open(file_path, 'r') as f:
                     file_content = f.read()
                 # 处理当前请求
-                print(str(datetime.now())[:-4] + "画图请求：" + file_path)
-                print(str(datetime.now())[:-4] + "用户输入：" + file_content)
+                console_log("画图请求：" + file_path)
+                console_log("用户输入：" + file_content)
                 generated_image_seed, generated_prompt = process_sd_request(driver, file_content)
-                print(str(datetime.now())[:-4] + "SD输入：" + generated_prompt)
+                console_log("SD输入：" + generated_prompt)
                 # 把翻译的sd prompt添加到请求txt中
                 with open(file_path, 'a') as f:
-                    f.write(generated_prompt+'\n')
+                    f.write('\n' + generated_prompt + '\n')
 
                 if generated_image_seed:
                     cur_folder_path = find_current_sd_output_folder()
                     if cur_folder_path:
-                        print(str(datetime.now())[:-4] + "出图完成：" + file_content)
-                        move_image_to_output(cur_folder_path, generated_image_seed)
+                        console_log("出图完成：" + file_content)
+                        move_image_to_output(cur_folder_path, session_name, generated_image_seed)
                         # 把请求的文件名添加上seed，方便和图片文件名对应起来
                         new_file_name = update_request_file_name_by_seed(file_path, generated_image_seed)
 
                     else:
-                        print(str(datetime.now())[:-4] + "无法找到SD webui出图文件夹 " + cur_folder_path)
+                        console_log("无法找到SD webui出图文件夹 " + cur_folder_path)
                 # 处理完成不管成功失败，都移动request 文件到历史记录
-                print(str(datetime.now())[:-4] + "归档请求：" + file_path)
+                console_log("归档请求：" + file_path)
                 shutil.copy2(file_path, image_history_folder_path + '\\' + new_file_name)
                 os.remove(file_path)
             time.sleep(1)

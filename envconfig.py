@@ -21,7 +21,7 @@ gpt_max_token = 1500
 max_token_per_session = 20
 wechat_one_msg_upper_limit = 600
 
-sensitive_prompts = ["nude", "pussy", "topless", "breasts", "breast", "boob", "busty"]
+sensitive_prompts = ["nude", "pussy", "topless", "breast", "boob", "busty"]
 
 
 # 日志文件
@@ -36,3 +36,7 @@ logging.basicConfig(filename=filename, filemode='a',
                            "[ %(filename)s-%(module)s-%(lineno)d ]  : %(message)s",
                     datefmt="%H:%M:%S",
                     level=logging.INFO)
+
+
+def console_log(log_line):
+    print(str(datetime.now())[:-4] + ' ' + log_line)
