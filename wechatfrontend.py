@@ -551,7 +551,7 @@ def start_gpt_bot_using_we_chat_frontend():
                     # 进入工作状态，添加消息到队列
                     if get_chat_history_in_session_and_process(kun_zai_bot, last_top_session):
                         state_machine = 0
-                        console_log("当前进入状态：working")
+                        console_log("当前进入状态：working，处理消息")
                 else:
                     # 应该没有这种情况
                     console_log("错误情况发生")
@@ -560,12 +560,12 @@ def start_gpt_bot_using_we_chat_frontend():
                 if top_message_has_changed:
                     if get_chat_history_in_session_and_process(kun_zai_bot, last_top_session):
                         state_machine = 0
-                        console_log("当前进入状态：working")
+                        console_log("当前进入状态：working，处理消息")
                 else:
                     # 如果收到了新的生成的图片，进入working状态
                     if has_unsent_processed_images():
                         state_machine = 0
-                        console_log("当前进入状态：working")
+                        console_log("当前进入状态：working，处理图片")
                         # send_processed_image_from_gpt_to_wechat(kun_zai_bot)
                     else:
                         time.sleep(0.5)
