@@ -19,10 +19,7 @@ from envconfig import *
 import re
 
 
-negative_prompt = "(NSFW: 2), paintings, sketches, (worst quality:2), (low quality:2), (normal quality:2), " \
-                  "low res, normal quality, ((monochrome)), ((grayscale)), skin spots, acnes, skin blemishes, " \
-                  "age spot, glans, bad legs, error legs, bad feet, 6 more fingers on one hand, deformity, " \
-                  "malformed limbs, extra limbs,"
+negative_prompt = "(NSFW: 2), topless, nude, naked, pussy, breasts out, masturbate, masturbating, nipple, paintings, sketches, (worst quality:2), (low quality:2), (normal quality:2), low res, normal quality, ((monochrome)), ((grayscale)), skin spots, acnes, skin blemishes, age spot, glans, bad legs, error legs, bad feet, 6 more fingers on one hand, deformity, malformed limbs, extra limbs,"
 
 image_width = 512
 image_height = 768
@@ -66,15 +63,26 @@ def get_formatted_prompt_from_gpt(prompt):
     return response['choices'][0]['message']['content'].strip()
 
 
-def filter_by_sensitive_keywords(prefilter_prompt):
-    filtered_prompt = prefilter_prompt.strip().split(',')
-    # filtered_prompt = [item for item in filtered_prompt if all(exclude_item not in item for exclude_item in sensitive_prompts)]
-    for index, string in enumerate(filtered_prompt):
-        for keyword in sensitive_prompts:
+def filter_prompt_by_sensitive_keywords(prefilter_prompt):
+    if ',' in prefilter_prompt:
+        filtered_prompt = prefilter_prompt.strip().split(',')
+    else:
+        filtered_prompt = [prefilter_prompt]
+    for keyword in sensitive_prompts:
+        for string in filtered_prompt[:]:
             regex = re.compile(re.escape(keyword), re.IGNORECASE)
-            filtered_prompt[index] = regex.sub('', string)
+            if regex.search(string):
+                filtered_prompt.remove(string)
 
+    filtered_prompt = [x for x in filtered_prompt if x != '']
     filtered_prompt = ','.join(filtered_prompt)
+    return filtered_prompt
+
+
+def filter_translation_by_sensitive_keywords(prefilter_prompt):
+    filtered_prompt = prefilter_prompt
+    for keyword in sensitive_prompts:
+        filtered_prompt = filtered_prompt.replace(keyword, '')
     return filtered_prompt
 
 
@@ -85,7 +93,8 @@ def process_sd_request(driver, user_prompt):
 我在这里引入StableDiffusion算法中的Prompt概念，又被称为提示符。
 下面的prompt是用来指导AI绘画模型创作图像的。它们包含了图像的各种细节，如人物的外观、背景、颜色和光线效果，以及图像的主题和风格。这些prompt的格式经常包含括号内的加权数字，用于指定某些细节的重要性或强调。例如，"(masterpiece:1.5)"表示作品质量是非常重要的，多个括号也有类似作用。此外，如果使用中括号，如"{blue hair:white hair:0.3}"，这代表将蓝发和白发加以融合，蓝发占比为0.3。括号内的加权数字单个不应该超过1.5，平均数应该约等于1。
 如果prompt包含人体，请必须在prompt中包含给人物描绘完整的服装。如果对象主体不是人物，那么不要给出人物相关的prompt，例如衣物，服装等。
-以下是用prompt帮助AI模型生成图像的例子：cold , solo , ( 1girl ) , detailed eyes , shinegoldeneyes, ( longliverhair ), expressionless , ( long sleeves , puffy sleeves ) ,  ( white wings ) , shinehalo , ( heavymetal : 1 . 2 ) , ( metaljewelry ) ,  cross-lacedfootwear ( chain ) ,  ( Whitedoves : 1 . 2 ) 
+只有在使用加权数字时才应使用括号，括号内词语数量只能为1个。
+以下是用prompt帮助AI模型生成图像的例子：cold , solo , ( 1girl ) , detailed eyes , shinegoldeneyes, ( longliverhair ), expressionless , ( long sleeves ), ( puffy sleeves ) ,  ( white wings ) , shinehalo , ( heavymetal : 1.2 ) , ( metaljewelry ) ,  cross-lacedfootwear ( chain ) ,  ( Whitedoves : 1 . 2 ) 
 
 可以选择的prompt包括：
 
@@ -132,7 +141,7 @@ beautiful purple sunset at beach  （海边的美丽日落）
 in the ocean           （海中）
 on the ocean          （船上）
 
-仿照例子，并不局限于我给你的单词，给出一套详细描述“''' + user_prompt + '''”的prompt，每个prompt以逗号分隔，注意：prompt不能超过80个。直接开始给出英文版的prompt不需要用自然语言描述。'''
+仿照例子，并不局限于我给你的单词，给出一套详细描述“''' + user_prompt + '''”的prompt，每个prompt需要括号包含，并且以逗号分隔，注意：prompt不能超过80个。直接开始给出英文版的prompt不需要用自然语言描述。'''
     prompt_input = "(extremely detailed CG unity 8k wallpaper), (masterpiece), (best quality), (ultra-detailed), (best illustration), (best shadow), ultra-high res, (realistic, photo-realistic:1.2),"
 
     translation_prompt = "翻译以下内容为英文：" + user_prompt
@@ -141,11 +150,11 @@ on the ocean          （船上）
     translated_prompt = translated_prompt.strip().replace('.', '')
 
     # 过滤敏感词：
-    translated_prompt = filter_by_sensitive_keywords(translated_prompt)
+    translated_prompt = filter_translation_by_sensitive_keywords(translated_prompt)
     # print(translated_prompt)
     formatted_user_prompt = get_formatted_prompt_from_gpt(request_to_gpt)
 
-    formatted_user_prompt = filter_by_sensitive_keywords(formatted_user_prompt)
+    formatted_user_prompt = filter_prompt_by_sensitive_keywords(formatted_user_prompt)
 
     prompt_input = prompt_input + translated_prompt + ", " + formatted_user_prompt
     # 获取prompt输入框
@@ -320,7 +329,7 @@ def run_stable_diffusion_queue():
     driver.get(url)
     # 最小化窗口
     # driver.minimize_window()
-    time.sleep(10)
+    time.sleep(5)
     initialize_sd_web_ui(driver)
     try:
         while True:
