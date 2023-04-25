@@ -42,9 +42,12 @@ def should_reply_message(message):
 
 def remove_hint_from_message_start(msg_content):
     msg_out = msg_content
-    at_string = '@' + bot_name + '\\u2005'
+    at_string = '@' + bot_name + ' '
+    # print('remove_hint_from_message_start ' + at_string)
+    # print('remove_hint_from_message_start ' + msg_out)
     if msg_out.startswith(at_string):
         msg_out = msg_out[len(at_string):]
+        # print('remove_hint_from_message_start in ' + msg_out)
 
     if msg_out.startswith(bot_wechat_id):
         msg_out = msg_out[len(bot_wechat_id):]
@@ -215,7 +218,7 @@ def handle_command(wechat_instance: ntchat.WeChat, message):
 
     msg = msg_data['msg']
     msg = remove_hint_from_message_start(msg)
-    print(msg)
+    # print('handle_command '+ msg)
     if '重置' in msg:
         clear_history(session_id)
         wechat_instance.send_text(to_wxid=session_id, content="对话已重置")
@@ -246,6 +249,7 @@ def is_command(message):
     msg_data = message["data"]
     msg = msg_data['msg']
     msg = remove_hint_from_message_start(msg)
+    # print(msg)
     if '重置' in msg:
         return True
     elif msg.startswith(image_backend_hint):
