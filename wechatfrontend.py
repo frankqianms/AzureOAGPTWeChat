@@ -10,6 +10,9 @@ import keyboard
 
 bypass_session_list = ['文件传输助手', '腾讯新闻', '订阅号', '微信团队', '微信支付']
 
+requests_folder_path = "F:\\文档\\Projects\\2023 GPT Stable Duffusion Project\\Image Requests"
+image_output_folder_path = "F:\\文档\\Projects\\2023 GPT Stable Duffusion Project\\Image Output"
+image_history_folder_path = "F:\\文档\\Projects\\2023 GPT Stable Duffusion Project\\Image History"
 
 # 所有会话的最后num_message_history_to_check条消息
 all_session_last_message = {}

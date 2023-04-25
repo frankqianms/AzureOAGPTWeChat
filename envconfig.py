@@ -3,10 +3,7 @@ import os
 from datetime import datetime
 
 # Constants
-requests_folder_path = "F:\\文档\\Projects\\2023 GPT Stable Duffusion Project\\Image Requests"
-image_output_folder_path = "F:\\文档\\Projects\\2023 GPT Stable Duffusion Project\\Image Output"
-image_history_folder_path = "F:\\文档\\Projects\\2023 GPT Stable Duffusion Project\\Image History"
-sd_webui_output_folder_path = "F:\\stable-diffusion-webui\\outputs\\txt2img-images"
+
 
 key1 = "bc57b5ecaf124dbea5f66cbb883e112a"
 api_base1 = "https://mikaelrealmopenaiuseast.openai.azure.com/"

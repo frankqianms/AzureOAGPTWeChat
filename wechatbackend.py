@@ -18,6 +18,10 @@ all_session_prompt_history = {}
 # 存储生成的线程列表
 thread_list = {}
 
+requests_folder_path = "F:\\文档\\Projects\\2023 GPT Stable Duffusion Project\\Image Requests"
+image_output_folder_path = "F:\\文档\\Projects\\2023 GPT Stable Duffusion Project\\Image Output"
+image_history_folder_path = "F:\\文档\\Projects\\2023 GPT Stable Duffusion Project\\Image History"
+
 
 def should_reply_message(message):
     msg_data = message["data"]
@@ -195,7 +199,8 @@ def handle_command(wechat_instance: ntchat.WeChat, message):
     room_id = msg_data['room_wxid']
     from_id = msg_data['from_wxid']
     session_id = room_id if room_id else from_id
-    nick_name = msg_data['nickname']
+    contacts = wechat_instance.get_contacts()
+    nick_name = contacts['nickname']
 
     msg = msg_data['msg']
     msg = remove_hint_from_message_start(msg)

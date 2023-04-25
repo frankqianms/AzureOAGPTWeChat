@@ -18,6 +18,10 @@ import openai
 from envconfig import *
 import re
 
+requests_folder_path = "Z:\\文档\\Projects\\2023 GPT Stable Duffusion Project\\Image Requests"
+image_output_folder_path = "Z:\\文档\\Projects\\2023 GPT Stable Duffusion Project\\Image Output"
+image_history_folder_path = "Z:\\文档\\Projects\\2023 GPT Stable Duffusion Project\\Image History"
+sd_webui_output_folder_path = "F:\\stable-diffusion-webui\\outputs\\txt2img-images"
 
 negative_prompt = "(NSFW: 2), topless, nude, naked, pussy, breasts out, masturbate, masturbating, nipple, paintings, sketches, (worst quality:2), (low quality:2), (normal quality:2), low res, normal quality, ((monochrome)), ((grayscale)), skin spots, acnes, skin blemishes, age spot, glans, bad legs, error legs, bad feet, 6 more fingers on one hand, deformity, malformed limbs, extra limbs,"
 
