@@ -1,4 +1,5 @@
 import random
+import shutil
 import sys
 import threading
 import time
@@ -28,7 +29,7 @@ def should_reply_message(message):
     if SELF_WXID in at_list:
         return True
     else:
-        if msg_content.startswith(bot_wechat_id):
+        if msg_content.startswith(tuple(chat_hint)):
             return True
 
     return False
@@ -194,6 +195,7 @@ def handle_command(wechat_instance: ntchat.WeChat, message):
     room_id = msg_data['room_wxid']
     from_id = msg_data['from_wxid']
     session_id = room_id if room_id else from_id
+    nick_name = msg_data['nickname']
 
     msg = msg_data['msg']
     msg = remove_hint_from_message_start(msg)
@@ -201,6 +203,17 @@ def handle_command(wechat_instance: ntchat.WeChat, message):
     if '重置' in msg:
         clear_history(session_id)
         wechat_instance.send_text(to_wxid=session_id, content="对话已重置")
+    elif msg.startswith(image_backend_hint):
+        user_prompt = msg[len(image_backend_hint):]
+        now = datetime.now()
+        # Format date and time as string
+        dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
+        file_name_to_create = dt_string.replace(":", "-")
+        file_name_to_create = file_name_to_create + ' ' + nick_name + ' ' + session_id + ".txt"
+        file_name_to_create = os.path.join(requests_folder_path, file_name_to_create)
+        with open(file_name_to_create, "w") as file:
+            file.write(user_prompt)
+            file.close()
 
 
 def handle_message(session_id, message):
@@ -218,6 +231,8 @@ def is_command(message):
     msg = msg_data['msg']
     msg = remove_hint_from_message_start(msg)
     if '重置' in msg:
+        return True
+    elif msg.startswith(image_backend_hint):
         return True
     return False
 
@@ -342,6 +357,29 @@ def send_reply_from_processed_queue(wechat_instance: ntchat.WeChat):
                 session_request_queue[each_key] = [x for x in session_request_queue[each_key] if not x['is_sent']]
 
 
+def send_image_from_processed_image_queue(wechat_instance: ntchat.WeChat):
+    png_files = [file for file in os.listdir(image_output_folder_path) if file.endswith('.png')]
+    for image in png_files:
+        cur_session = image.split(" ")[-2]
+        img_path = os.path.join(image_output_folder_path, image)
+        img_path_str = img_path.replace('\\', '/')
+        file_size = os.path.getsize(img_path_str)
+
+        if file_size > 10000:  # 10kb以上才是和谐图片，10kb以下都是全黑屏蔽图片
+            rand_time = random.uniform(1.0, 2.5)
+            time.sleep(rand_time)
+            wechat_instance.send_image(to_wxid=cur_session, file_path=img_path_str)
+        else:
+            wechat_instance.send_text(to_wxid=cur_session, content="图片生成失败")
+        now = datetime.now()
+        # Format date and time as string
+        dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
+        file_name_to_create = dt_string.replace(":", "-")
+        file_name_to_create = file_name_to_create + " " + image
+        shutil.copy2(img_path, image_history_folder_path + '\\' + file_name_to_create)
+        os.remove(img_path)
+
+
 def start_gpt_bot_using_we_chat_backend():
     wechat = ntchat.WeChat()
 
@@ -396,6 +434,7 @@ def start_gpt_bot_using_we_chat_backend():
         while True:
             # 主线程负责发送队列里收到gpt的回复给对应的聊天
             send_reply_from_processed_queue(wechat)
+            send_image_from_processed_image_queue(wechat)
 
     except KeyboardInterrupt:
         ntchat.exit_()

@@ -276,14 +276,16 @@ def find_current_sd_output_folder():
         return None
 
 
-def move_image_to_output(cur_folder_path, session, generated_image_seed):
+def move_image_to_output(cur_folder_path, split_file_name_list, generated_image_seed):
     time.sleep(1)
     png_files = [file for file in os.listdir(cur_folder_path) if file.endswith('.png')]
+    split_file_name_list[-1] = split_file_name_list[-1][:-4]
+    file_name = ' '.join(split_file_name_list[2:])
     last_png_file = png_files[-1]
     file_end = generated_image_seed + ".png"
     if last_png_file.endswith(file_end):
         console_log("找到目标图片，正在移动中")
-        dest_file_name_str = session + " " + generated_image_seed + ".png"
+        dest_file_name_str = file_name + " " + generated_image_seed + ".png"
         source_file_path = os.path.join(cur_folder_path, last_png_file)
         shutil.copy2(source_file_path, image_output_folder_path + '\\' + dest_file_name_str)
         console_log("移动完成")
@@ -342,7 +344,8 @@ def run_stable_diffusion_queue():
             # 遍历所有出图请求
             files = [fs for fs in os.listdir(requests_folder_path) if fs.endswith('.txt')]
             for file in files:
-                session_name = file.split(' ')[2][:-4]
+                split_file_name_list = file.split(' ')
+
                 file_path = os.path.join(requests_folder_path, file)
                 # 获取当前请求txt
                 with open(file_path, 'r') as f:
@@ -360,7 +363,7 @@ def run_stable_diffusion_queue():
                     cur_folder_path = find_current_sd_output_folder()
                     if cur_folder_path:
                         console_log("出图完成：" + file_content)
-                        move_image_to_output(cur_folder_path, session_name, generated_image_seed)
+                        move_image_to_output(cur_folder_path, split_file_name_list, generated_image_seed)
                         # 把请求的文件名添加上seed，方便和图片文件名对应起来
                         new_file_name = update_request_file_name_by_seed(file_path, generated_image_seed)
 

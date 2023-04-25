@@ -21,7 +21,11 @@ gpt_max_token = 1500
 # 发送给gpt的消息历史最大数量
 max_token_per_session = 20
 wechat_one_msg_upper_limit = 600
-
+bot_name_in_reply = ''  # '[AI]'
+# bot_name_in_reply = ''
+chat_hint = [bot_name]  # , "[AI]"]
+image_hint = bot_name + "生成图片："
+image_backend_hint = "生成图片："
 sensitive_prompts = ["nude", "pussy", "topless", "breast", "boob", "busty", "naked", "sensual", "sex", "cock", "penis", "masturbate", "masturbating", "nipple", "chest"]
 
 

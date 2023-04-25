@@ -10,10 +10,6 @@ import keyboard
 
 bypass_session_list = ['文件传输助手', '腾讯新闻', '订阅号', '微信团队', '微信支付']
 
-bot_name_in_reply = ''  # '[AI]'
-# bot_name_in_reply = ''
-chat_hint = [bot_name]  # , "[AI]"]
-image_hint = bot_name + "生成图片："
 
 # 所有会话的最后num_message_history_to_check条消息
 all_session_last_message = {}
