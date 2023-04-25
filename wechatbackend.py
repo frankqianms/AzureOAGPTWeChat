@@ -7,6 +7,7 @@ import xml
 import openai
 from envconfig import *
 import ntchat
+import os
 
 
 SELF_WXID = ""
@@ -200,7 +201,10 @@ def handle_command(wechat_instance: ntchat.WeChat, message):
     from_id = msg_data['from_wxid']
     session_id = room_id if room_id else from_id
     contacts = wechat_instance.get_contacts()
-    nick_name = contacts['nickname']
+
+    contact_item_list = [x for x in contacts if x['wxid'] == from_id]
+    contact_item = contact_item_list[0]
+    nick_name = contact_item['nickname']
 
     msg = msg_data['msg']
     msg = remove_hint_from_message_start(msg)
@@ -382,6 +386,7 @@ def send_image_from_processed_image_queue(wechat_instance: ntchat.WeChat):
         file_name_to_create = dt_string.replace(":", "-")
         file_name_to_create = file_name_to_create + " " + image
         shutil.copy2(img_path, image_history_folder_path + '\\' + file_name_to_create)
+        time.sleep(2)
         os.remove(img_path)
 
 
