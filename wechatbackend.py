@@ -3,11 +3,10 @@ import sys
 import threading
 import time
 import xml
-
 import openai
-
 from envconfig import *
 import ntchat
+
 
 SELF_WXID = ""
 session_request_queue = {}

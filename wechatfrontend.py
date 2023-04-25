@@ -1,5 +1,4 @@
 import shutil
-
 from wxauto import *
 import time
 import threading
