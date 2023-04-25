@@ -207,7 +207,10 @@ on the ocean          （船上）
             seed_text = driver.find_element(By.XPATH,
                                                   "/html/body/gradio-app/div/div/div/div/div/div[2]/div[2]/div/div[5]/div[2]/div[2]/div[3]/div[1]/div[2]/div").text
             seed_index_start = seed_text.find("Seed: ") + len("Seed: ")
-            seed_index_end = seed_text.find(", Face restoration:")
+            if ", Face restoration:" in seed_text:
+                seed_index_end = seed_text.find(", Face restoration:")
+            else:
+                seed_index_end = seed_text.find(", Size:")
             seed_value = seed_text[seed_index_start: seed_index_end]
             return seed_value, prompt_input
     else:
