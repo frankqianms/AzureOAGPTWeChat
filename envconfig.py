@@ -15,6 +15,7 @@ api_base2 = "https://mikaelrealmopenaiussouthcentral.openai.azure.com/"
 # openai.api_version = '2022-12-01'
 deployment_id = 'GPT35'
 bot_wechat_id = '堃仔'
+bot_name = "堃仔"
 gpt_temperature = 0.8
 gpt_max_token = 1500
 # 发送给gpt的消息历史最大数量
