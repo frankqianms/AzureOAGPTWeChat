@@ -41,7 +41,14 @@ def should_reply_message(message):
 
 
 def remove_hint_from_message_start(msg_content):
-    return msg_content[len(bot_wechat_id):] if msg_content.startswith(bot_wechat_id) else msg_content
+    msg_out = msg_content
+    at_string = '@' + bot_name + '\\u2005'
+    if msg_out.startswith(at_string):
+        msg_out = msg_out[len(at_string):]
+
+    if msg_out.startswith(bot_wechat_id):
+        msg_out = msg_out[len(bot_wechat_id):]
+    return msg_out
 
 
 class GPTRequestThread(threading.Thread):
