@@ -367,6 +367,7 @@ def send_reply_from_processed_queue(wechat_instance: ntchat.WeChat):
 
 
 def send_image_from_processed_image_queue(wechat_instance: ntchat.WeChat):
+    os.utime(image_output_folder_path, None)
     png_files = [file for file in os.listdir(image_output_folder_path) if file.endswith('.png')]
     for image in png_files:
         cur_session = image.split(" ")[-2]
