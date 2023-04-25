@@ -215,7 +215,7 @@ def handle_command(wechat_instance: ntchat.WeChat, message):
 
     msg = msg_data['msg']
     msg = remove_hint_from_message_start(msg)
-
+    print(msg)
     if '重置' in msg:
         clear_history(session_id)
         wechat_instance.send_text(to_wxid=session_id, content="对话已重置")
