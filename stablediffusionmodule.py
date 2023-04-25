@@ -252,8 +252,8 @@ def initialize_sd_web_ui(driver):
     sampler_step.send_keys(28)
 
     # 设置面部修复
-    face_fix_check_box = driver.find_element(By.XPATH, "/html/body/gradio-app/div/div/div/div/div/div[2]/div[2]/div/div[5]/div[1]/div[2]/div[1]/label/input")
-    face_fix_check_box.click()
+    # face_fix_check_box = driver.find_element(By.XPATH, "/html/body/gradio-app/div/div/div/div/div/div[2]/div[2]/div/div[5]/div[1]/div[2]/div[1]/label/input")
+    # face_fix_check_box.click()
 
     # 设置提示词相关性
     cfg_scale_num = driver.find_element(By.XPATH, "/html/body/gradio-app/div/div/div/div/div/div[2]/div[2]/div/div[5]/div[1]/div[5]/div[2]/div/input")
