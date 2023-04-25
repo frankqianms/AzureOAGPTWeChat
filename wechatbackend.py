@@ -11,6 +11,8 @@ import ntchat
 
 SELF_WXID = ""
 session_request_queue = {}
+# 给队列加锁，防止三个线程同时修改队列
+session_request_queue_lock = threading.Lock()
 all_session_prompt_history = {}
 
 # 存储生成的线程列表
@@ -87,7 +89,9 @@ class GPTRequestThread(threading.Thread):
         while True:
             # 处理队列中所有消息
             if len(session_request_queue[self.name]) != 0:
-                for each_request_index in len(session_request_queue[self.name]):
+                # 防止监听新消息在线程for loop中扩大队列
+                cur_queue_len = len(session_request_queue[self.name])
+                for each_request_index in range(cur_queue_len):
                     each_request = session_request_queue[self.name][each_request_index]
                     session_id = each_request['session_id']
                     at_list = each_request['at_list']
@@ -125,12 +129,12 @@ class GPTRequestThread(threading.Thread):
 
             self.idle_time = self.idle_time + 1
             time.sleep(0.1)
-            # 如果1分钟左右没有新消息，删掉已发送消息，释放线程
-            if self.idle_time >= 600:
-                session_request_queue[self.name] = [d for d in session_request_queue[self.name] if not d['is_sent']]
+            # 如果30s左右没有新消息，删掉已发送消息，释放线程
+            if self.idle_time >= 300:
+                # session_request_queue[self.name] = [d for d in session_request_queue[self.name] if not d['is_sent']]
                 break
         thread_list.pop(self.name)
-        logging.info(self.name + ", Thread released due to idle for 1 minutes.")
+        logging.info(self.name + ", Thread released due to idle for 30 s.")
 
     def run(self):
         self.my_worker()
@@ -145,55 +149,59 @@ def enqueue_request_to_gpt(message):
     # 发送人id
     from_wxid = msg_data["from_wxid"]
 
-    # 群消息流程
-    if room_id:
-        # 当前群聊第一次进入消息队列
-        if room_id not in session_request_queue.keys():
-            session_request_queue[room_id] = [{
-                'session_id': room_id,
-                'at_list': [from_wxid],
-                'message': msg_content,
-                'reply': '',
-                'is_sent': False
-            }]
+    with session_request_queue_lock:
+        # 群消息流程
+        if room_id:
+            # 当前群聊第一次进入消息队列
+            if room_id not in session_request_queue.keys():
+                session_request_queue[room_id] = [{
+                    'session_id': room_id,
+                    'at_list': [from_wxid],
+                    'message': msg_content,
+                    'reply': '',
+                    'is_sent': False
+                }]
+            else:
+                session_request_queue[room_id].append({
+                    'session_id': room_id,
+                    'at_list': [from_wxid],
+                    'message': msg_content,
+                    'reply': '',
+                    'is_sent': False
+                })
+        # 个人消息流程
         else:
-            session_request_queue[room_id].append({
-                'session_id': room_id,
-                'at_list': [from_wxid],
-                'message': msg_content,
-                'reply': '',
-                'is_sent': False
-            })
-    # 个人消息流程
-    else:
-        if from_wxid not in session_request_queue.keys():
-            session_request_queue[from_wxid] = [{
-                'session_id': from_wxid,
-                'at_list': [],
-                'message': msg_content,
-                'reply': '',
-                'is_sent': False
-            }]
-        else:
-            session_request_queue[from_wxid].append({
-                'session_id': from_wxid,
-                'at_list': [],
-                'message': msg_content,
-                'reply': '',
-                'is_sent': False
-            })
+            if from_wxid not in session_request_queue.keys():
+                session_request_queue[from_wxid] = [{
+                    'session_id': from_wxid,
+                    'at_list': [],
+                    'message': msg_content,
+                    'reply': '',
+                    'is_sent': False
+                }]
+            else:
+                session_request_queue[from_wxid].append({
+                    'session_id': from_wxid,
+                    'at_list': [],
+                    'message': msg_content,
+                    'reply': '',
+                    'is_sent': False
+                })
 
 
 def handle_command(wechat_instance: ntchat.WeChat, message):
     msg_data = message["data"]
     # 群id（如有）
     room_id = msg_data['room_wxid']
+    from_id = msg_data['from_wxid']
+    session_id = room_id if room_id else from_id
 
     msg = msg_data['msg']
     msg = remove_hint_from_message_start(msg)
+
     if '重置' in msg:
-        clear_history(room_id)
-        wechat_instance.send_room_at_msg(to_wxid=room_id, content="对话已重置")
+        clear_history(session_id)
+        wechat_instance.send_text(to_wxid=session_id, content="对话已重置")
 
 
 def handle_message(session_id, message):
@@ -253,8 +261,9 @@ def handle_personal_chat_message(wechat_instance: ntchat.WeChat, message):
 
 
 def is_session_request_queue_empty():
-    for each_key in session_request_queue.keys():
-        if session_request_queue[each_key]:
+    session_request_queue_copy = session_request_queue.copy()
+    for each_key in session_request_queue_copy.keys():
+        if session_request_queue_copy[each_key]:
             return False
     return True
 
@@ -283,6 +292,9 @@ def enqueue_history(each_request):
     process_prompt_history(session_id, user_input_prompt)
     # 添加gpt回复添加到prompt history
     process_prompt_history(session_id, gpt_reply_prompt)
+    if len(all_session_prompt_history[session_id]) > max_token_per_session:
+        return False
+    return True
 
 
 def clear_history(session_id):
@@ -297,8 +309,10 @@ def send_reply_from_processed_queue(wechat_instance: ntchat.WeChat):
     if is_session_request_queue_empty():
         time.sleep(1)
         return None
-    for each_key in session_request_queue.keys():
-        for each_request_index in len(session_request_queue[each_key]):
+    # 解决监听消息时会增加dictionary的key的runtime error
+    session_request_queue_copy = session_request_queue.copy()
+    for each_key in session_request_queue_copy.keys():
+        for each_request_index in range(len(session_request_queue_copy[each_key])):
             each_request = session_request_queue[each_key][each_request_index]
             session_id = each_request['session_id']
             at_list = each_request['at_list']
@@ -306,18 +320,27 @@ def send_reply_from_processed_queue(wechat_instance: ntchat.WeChat):
             reply = each_request['reply']
             is_sent = each_request['is_sent']
 
+            is_group_chat = 'chatroom' in session_id
+
             if not reply or is_sent:
                 # 没有gpt回复或者已经发送的消息不处理
                 continue
             else:
-                rand_time = random.uniform(0.5, 1.5)
+                rand_time = random.uniform(1.5, 4.5)
                 time.sleep(rand_time)
-                wechat_instance.send_room_at_msg(to_wxid=session_id, content=reply, at_list=at_list)
+                if at_list:
+                    wechat_instance.send_room_at_msg(to_wxid=session_id, content=reply, at_list=at_list)
+                else:
+                    wechat_instance.send_text(to_wxid=session_id, content=reply)
                 each_request['is_sent'] = True
                 if not enqueue_history(each_request):
                     clear_history(session_id)
-                    wechat_instance.send_room_at_msg(to_wxid=session_id, content='对话已达到' + str(max_token_per_session) + '句，重置对话')
-                # session_request_queue[each_key].pop(each_request_index)
+                    wechat_instance.send_text(to_wxid=session_id, content='对话已达到' + str(max_token_per_session) + '句，重置对话')
+        # 如果当前会话线程释放，并且没有更多未处理消息，清理一次队列
+        not_sent_requests = [x for x in session_request_queue[each_key] if not x['is_sent']]
+        if each_key not in thread_list.keys() and len(not_sent_requests) == 0:
+            with session_request_queue_lock:
+                session_request_queue[each_key] = [x for x in session_request_queue[each_key] if not x['is_sent']]
 
 
 def start_gpt_bot_using_we_chat_backend():
