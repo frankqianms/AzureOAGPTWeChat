@@ -210,11 +210,17 @@ def handle_command(wechat_instance: ntchat.WeChat, message):
     room_id = msg_data['room_wxid']
     from_id = msg_data['from_wxid']
     session_id = room_id if room_id else from_id
-    contacts = wechat_instance.get_contacts()
 
-    contact_item_list = [x for x in contacts if x['wxid'] == from_id]
-    contact_item = contact_item_list[0]
-    nick_name = contact_item['nickname']
+    if room_id:
+        groups = wechat_instance.get_rooms()
+        group_item_list = [x for x in groups if x['wxid'] == room_id]
+        group_item = group_item_list[0]
+        nick_name = group_item['nickname']
+    else:
+        contacts = wechat_instance.get_contacts()
+        contact_item_list = [x for x in contacts if x['wxid'] == from_id]
+        contact_item = contact_item_list[0]
+        nick_name = contact_item['nickname']
 
     msg = msg_data['msg']
     msg = remove_hint_from_message_start(msg)
@@ -443,7 +449,6 @@ def start_gpt_bot_using_we_chat_backend():
         msg_data = message["data"]
         # 群id（如有）
         room_id = msg_data['room_wxid']
-
         # 群消息流程
         if room_id:
             handle_group_chat_message(wechat_instance, message)
