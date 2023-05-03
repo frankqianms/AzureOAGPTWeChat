@@ -15,7 +15,8 @@ session_request_queue = {}
 # 给队列加锁，防止三个线程同时修改队列
 session_request_queue_lock = threading.Lock()
 all_session_prompt_history = {}
-
+# 不需要提示词的好友
+no_hint_nickname_list = ['方堃']
 # 存储生成的线程列表
 thread_list = {}
 
@@ -24,8 +25,14 @@ image_output_folder_path = "F:\\文档\\Projects\\2023 GPT Stable Duffusion Proj
 image_history_folder_path = "F:\\文档\\Projects\\2023 GPT Stable Duffusion Project\\Image History"
 
 
-def should_reply_message(message):
+def should_reply_message(wechat_instance, message):
     msg_data = message["data"]
+    # 发送的人
+    from_id = msg_data['from_wxid']
+    contacts = wechat_instance.get_contacts()
+    contact_item_list = [x for x in contacts if x['wxid'] == from_id]
+    contact_item = contact_item_list[0]
+    nick_name = contact_item['nickname']
     # @的人列表
     at_list = msg_data['at_user_list']
     # 消息内容
@@ -34,6 +41,8 @@ def should_reply_message(message):
     if SELF_WXID in at_list:
         return True
     else:
+        if nick_name in no_hint_nickname_list:
+            return True
         if msg_content.startswith(tuple(chat_hint)):
             return True
 
@@ -272,7 +281,7 @@ def handle_group_chat_message(wechat_instance: ntchat.WeChat, message):
         return None
 
     # 只处理提示词开头或者@我自己的消息
-    if should_reply_message(message):
+    if should_reply_message(wechat_instance, message):
         # 处理特殊命令
         if is_command(message):
             handle_command(wechat_instance, message)
@@ -292,7 +301,7 @@ def handle_personal_chat_message(wechat_instance: ntchat.WeChat, message):
         return None
 
     # 只处理提示词开头或者@我自己的消息
-    if should_reply_message(message):
+    if should_reply_message(wechat_instance, message):
         if is_command(message):
             handle_command(wechat_instance, message)
         else:
