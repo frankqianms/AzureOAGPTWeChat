@@ -31,8 +31,11 @@ def should_reply_message(wechat_instance, message):
     from_id = msg_data['from_wxid']
     contacts = wechat_instance.get_contacts()
     contact_item_list = [x for x in contacts if x['wxid'] == from_id]
-    contact_item = contact_item_list[0]
-    nick_name = contact_item['nickname']
+    if contact_item_list:
+        contact_item = contact_item_list[0]
+        nick_name = contact_item['nickname']
+    else:
+        nick_name = None
     # @的人列表
     at_list = msg_data['at_user_list']
     # 消息内容
@@ -51,7 +54,7 @@ def should_reply_message(wechat_instance, message):
             return False
     # 个人消息流程
     else:
-        if nick_name in no_hint_nickname_list:
+        if nick_name and nick_name in no_hint_nickname_list:
             return True
         elif msg_content.startswith(tuple(chat_hint)):
             return True
