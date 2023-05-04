@@ -38,15 +38,25 @@ def should_reply_message(wechat_instance, message):
     # 消息内容
     msg_content = msg_data['msg']
 
-    if SELF_WXID in at_list:
-        return True
+    # 群id（如有）
+    room_id = msg_data['room_wxid']
+
+    # 群消息流程
+    if room_id:
+        if SELF_WXID in at_list:
+            return True
+        elif msg_content.startswith(tuple(chat_hint)):
+            return True
+        else:
+            return False
+    # 个人消息流程
     else:
         if nick_name in no_hint_nickname_list:
             return True
-        if msg_content.startswith(tuple(chat_hint)):
+        elif msg_content.startswith(tuple(chat_hint)):
             return True
-
-    return False
+        else:
+            return False
 
 
 def remove_hint_from_message_start(msg_content):
