@@ -16,7 +16,7 @@ session_request_queue = {}
 session_request_queue_lock = threading.Lock()
 all_session_prompt_history = {}
 # 不需要提示词的好友
-no_hint_nickname_list = ['方堃']
+no_hint_nickname_list = ['方堃', 'Aimee']
 # 存储生成的线程列表
 thread_list = {}
 
