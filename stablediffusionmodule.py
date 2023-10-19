@@ -1,18 +1,13 @@
 # 导入Selenium库
 import shutil
 
-import win32con
-from selenium.common import TimeoutException
 from selenium.webdriver.support.expected_conditions import visibility_of_element_located
 from selenium.webdriver.common.by import By
 from selenium.webdriver.edge.service import Service
 from selenium.webdriver.edge.options import Options
-from selenium.webdriver import Edge, ActionChains
+from selenium.webdriver import Edge
 from datetime import date
-from datetime import datetime
-import subprocess
 import time
-import os
 from selenium.webdriver.support.wait import WebDriverWait
 import openai
 from envconfig import *
@@ -28,6 +23,11 @@ negative_prompt = "(NSFW: 2), topless, nude, naked, pussy, breasts out, masturba
 image_width = 512
 image_height = 768
 image_process_timeout = 60
+
+openai.api_key = key1
+openai.api_base = api_base1
+openai.api_type = 'azure'
+openai.api_version = '2023-03-15-preview'
 
 
 def get_formatted_prompt_from_gpt(prompt):
@@ -148,7 +148,7 @@ on the ocean          （船上）
 仿照例子，并不局限于我给你的单词，给出一套详细描述“''' + user_prompt + '''”的prompt，每个prompt需要括号包含，并且以逗号分隔，注意：prompt不能超过80个。直接开始给出英文版的prompt不需要用自然语言描述。'''
     prompt_input = "(extremely detailed CG unity 8k wallpaper), (masterpiece), (best quality), (ultra-detailed), (best illustration), (best shadow), ultra-high res, (realistic, photo-realistic:1.2),"
 
-    translation_prompt = "翻译以下内容为英文：" + user_prompt
+    translation_prompt = "翻译以下内容为英文，请直接给出英文内容，不需要用自然语言描述：" + user_prompt
     translated_prompt = get_formatted_prompt_from_gpt(translation_prompt)
     # print(translated_prompt)
     translated_prompt = translated_prompt.strip().replace('.', '')
@@ -365,7 +365,7 @@ def run_stable_diffusion_queue():
                 # 把翻译的sd prompt添加到请求txt中
                 with open(file_path, 'a') as f:
                     f.write('\n' + generated_prompt + '\n')
-
+                new_file_name = file
                 if generated_image_seed:
                     cur_folder_path = find_current_sd_output_folder()
                     if cur_folder_path:
@@ -384,3 +384,6 @@ def run_stable_diffusion_queue():
     except KeyboardInterrupt:
         pass
         # process.kill()
+
+
+run_stable_diffusion_queue()
