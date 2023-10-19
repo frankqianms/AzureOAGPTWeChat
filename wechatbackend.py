@@ -24,6 +24,10 @@ requests_folder_path = "F:\\文档\\Projects\\2023 GPT Stable Duffusion Project\
 image_output_folder_path = "F:\\文档\\Projects\\2023 GPT Stable Duffusion Project\\Image Output"
 image_history_folder_path = "F:\\文档\\Projects\\2023 GPT Stable Duffusion Project\\Image History"
 
+openai.api_key = key1
+openai.api_base = api_base1
+openai.api_type = 'azure'
+openai.api_version = '2023-03-15-preview'
 
 def should_reply_message(wechat_instance, message):
     msg_data = message["data"]
