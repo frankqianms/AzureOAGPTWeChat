@@ -5,9 +5,9 @@ from datetime import datetime
 # Constants
 
 
-key1 = "bc57b5ecaf124dbea5f66cbb883e112a"
+key1 = "xx"
 api_base1 = "https://mikaelrealmopenaiuseast.openai.azure.com/"
-key2 = "e0fa531d0d4d4c96a70be8434c5f85b4"
+key2 = "xx"
 api_base2 = "https://mikaelrealmopenaiussouthcentral.openai.azure.com/"
 # openai.api_version = '2022-12-01'
 deployment_id = 'GPT35'
