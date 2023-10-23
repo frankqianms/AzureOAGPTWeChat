@@ -9,6 +9,8 @@ from envconfig import *
 import ntchat
 import os
 
+from utils.askGPT import AIAsker
+
 
 SELF_WXID = ""
 session_request_queue = {}
@@ -86,6 +88,7 @@ class GPTRequestThread(threading.Thread):
         self.thread_id = id
         self.idle_time = 0
         self.name = chat_id
+        self._aiasker = AIAsker()
 
     def send_request_to_gpt(self, prompt, prompt_history):
         # Send a completion call to generate an answer
@@ -94,14 +97,7 @@ class GPTRequestThread(threading.Thread):
                             "content": system_prompt}] + prompt_history
         message_to_send.append(prompt)
         try:
-            response = openai.ChatCompletion.create(
-                engine="GPT35",
-                messages=message_to_send,
-                temperature=gpt_temperature,
-                max_tokens=gpt_max_token,
-                frequency_penalty=0.2,
-                presence_penalty=0,
-                stop=None)
+            response = self._aiasker.askGPT(message_to_send)
         except Exception as ex:
             console_log("Thread: " + self.name +
                   " has error with Azure OpenAI API call: " + str(ex))
@@ -113,17 +109,10 @@ class GPTRequestThread(threading.Thread):
                 openai.api_key = key1
                 openai.api_base = api_base2
             logging.info("Thread: " + self.name + " Switching to backup key success")
-            response = openai.ChatCompletion.create(
-                engine="GPT35",
-                messages=message_to_send,
-                temperature=gpt_temperature,
-                max_tokens=gpt_max_token,
-                frequency_penalty=0.2,
-                presence_penalty=0,
-                stop=None)
+            response = self._aiasker.askGPT(message_to_send)
 
         # return response['choices'][0]['message']['content'].replace('\\n', '').replace(' .', '.').strip()
-        return response['choices'][0]['message']['content'].strip()
+        return response.strip()
 
     def my_worker(self):
         logging.info(self.name + ": Thread started.")
